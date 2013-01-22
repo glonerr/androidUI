@@ -41,45 +41,45 @@ import android.view.CompatibilityInfoHolder;
 import android.view.Display;
 import android.view.View;
 
-
 public class Main {
 
 	/**
 	 * @param args
-	 * @throws FileNotFoundException 
+	 * @throws FileNotFoundException
 	 */
 	public static void main(String[] args) throws FileNotFoundException {
 		// TODO Auto-generated method stub
-		System.setOut(new PrintStream("/home/lonerr/myView"));
-		printClass(View.class);
+		// System.setOut(new PrintStream("/home/lonerr/myView"));
+		// printClass(View.class);
 		View view = new View(new MyContext());
-		System.out.println(view);
+		// System.out.println(view);
 	}
-	
-	private static void printClass(Class<?> class1){
+
+	public static void printClass(Class<?> class1) {
 		Method[] methods = class1.getDeclaredMethods();
-		Arrays.sort(methods,new MyComparator());
-		for(Method method:methods){
+		Arrays.sort(methods, new MyComparator());
+		for (Method method : methods) {
 			System.out.println(method.toString());
 		}
 	}
-	
+
 	private static final class MyContext extends Context {
 		private Resources mResources;
-		public MyContext(){
+
+		public MyContext() {
 			mResources = new Resources(null, new DisplayMetrics(), null);
 		}
-		
+
 		@Override
 		public void unregisterReceiver(BroadcastReceiver arg0) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void unbindService(ServiceConnection arg0) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
@@ -110,14 +110,14 @@ public class Main {
 		public void startIntentSender(IntentSender arg0, Intent arg1, int arg2,
 				int arg3, int arg4, Bundle arg5) throws SendIntentException {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void startIntentSender(IntentSender arg0, Intent arg1, int arg2,
 				int arg3, int arg4) throws SendIntentException {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
@@ -130,72 +130,73 @@ public class Main {
 		@Override
 		public void startActivity(Intent arg0, Bundle arg1) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void startActivity(Intent arg0) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void startActivities(Intent[] arg0, Bundle arg1) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void startActivities(Intent[] arg0) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		@Deprecated
 		public void setWallpaper(InputStream arg0) throws IOException {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		@Deprecated
 		public void setWallpaper(Bitmap arg0) throws IOException {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void setTheme(int arg0) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
-		public void sendStickyOrderedBroadcastAsUser(Intent arg0, UserHandle arg1,
-				BroadcastReceiver arg2, Handler arg3, int arg4, String arg5,
-				Bundle arg6) {
+		public void sendStickyOrderedBroadcastAsUser(Intent arg0,
+				UserHandle arg1, BroadcastReceiver arg2, Handler arg3,
+				int arg4, String arg5, Bundle arg6) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
-		public void sendStickyOrderedBroadcast(Intent arg0, BroadcastReceiver arg1,
-				Handler arg2, int arg3, String arg4, Bundle arg5) {
+		public void sendStickyOrderedBroadcast(Intent arg0,
+				BroadcastReceiver arg1, Handler arg2, int arg3, String arg4,
+				Bundle arg5) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void sendStickyBroadcastAsUser(Intent arg0, UserHandle arg1) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void sendStickyBroadcast(Intent arg0) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
@@ -203,7 +204,7 @@ public class Main {
 				String arg2, BroadcastReceiver arg3, Handler arg4, int arg5,
 				String arg6, Bundle arg7) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
@@ -211,55 +212,56 @@ public class Main {
 				BroadcastReceiver arg2, Handler arg3, int arg4, String arg5,
 				Bundle arg6) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void sendOrderedBroadcast(Intent arg0, String arg1) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
-		public void sendBroadcastAsUser(Intent arg0, UserHandle arg1, String arg2) {
+		public void sendBroadcastAsUser(Intent arg0, UserHandle arg1,
+				String arg2) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void sendBroadcastAsUser(Intent arg0, UserHandle arg1) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void sendBroadcast(Intent arg0, String arg1) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void sendBroadcast(Intent arg0) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void revokeUriPermission(Uri arg0, int arg1) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void removeStickyBroadcastAsUser(Intent arg0, UserHandle arg1) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void removeStickyBroadcast(Intent arg0) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
@@ -270,8 +272,8 @@ public class Main {
 		}
 
 		@Override
-		public Intent registerReceiver(BroadcastReceiver arg0, IntentFilter arg1,
-				String arg2, Handler arg3) {
+		public Intent registerReceiver(BroadcastReceiver arg0,
+				IntentFilter arg1, String arg2, Handler arg3) {
 			// TODO Auto-generated method stub
 			return null;
 		}
@@ -320,7 +322,7 @@ public class Main {
 		@Override
 		public void grantUriPermission(String arg0, Uri arg1, int arg2) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
@@ -497,45 +499,46 @@ public class Main {
 		public void enforceUriPermission(Uri arg0, String arg1, String arg2,
 				int arg3, int arg4, int arg5, String arg6) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
-		public void enforceUriPermission(Uri arg0, int arg1, int arg2, int arg3,
-				String arg4) {
+		public void enforceUriPermission(Uri arg0, int arg1, int arg2,
+				int arg3, String arg4) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
-		public void enforcePermission(String arg0, int arg1, int arg2, String arg3) {
+		public void enforcePermission(String arg0, int arg1, int arg2,
+				String arg3) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void enforceCallingUriPermission(Uri arg0, int arg1, String arg2) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void enforceCallingPermission(String arg0, String arg1) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void enforceCallingOrSelfUriPermission(Uri arg0, int arg1,
 				String arg2) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void enforceCallingOrSelfPermission(String arg0, String arg1) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
@@ -586,12 +589,12 @@ public class Main {
 		@Deprecated
 		public void clearWallpaper() throws IOException {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
-		public int checkUriPermission(Uri arg0, String arg1, String arg2, int arg3,
-				int arg4, int arg5) {
+		public int checkUriPermission(Uri arg0, String arg1, String arg2,
+				int arg3, int arg4, int arg5) {
 			// TODO Auto-generated method stub
 			return 0;
 		}
@@ -639,14 +642,14 @@ public class Main {
 		}
 	}
 
-	private static class MyComparator implements Comparator<Method>{
+	private static class MyComparator implements Comparator<Method> {
 
 		@Override
 		public int compare(Method o1, Method o2) {
 			// TODO Auto-generated method stub
-			return ((Method)o1).toString().compareTo(((Method)o2).toString());
+			return ((Method) o1).toString().compareTo(((Method) o2).toString());
 		}
-		
+
 	}
 
 }
