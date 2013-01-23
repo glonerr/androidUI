@@ -35,6 +35,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemProperties;
 import android.os.UserHandle;
 import android.util.DisplayMetrics;
 import android.view.CompatibilityInfoHolder;
@@ -48,6 +49,7 @@ public class Main {
 	 * @throws FileNotFoundException
 	 */
 	public static void main(String[] args) throws FileNotFoundException {
+		 System.loadLibrary("system");  
 		// TODO Auto-generated method stub
 		// System.setOut(new PrintStream("/home/lonerr/myView"));
 		// printClass(View.class);
