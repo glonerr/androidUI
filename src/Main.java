@@ -74,7 +74,7 @@ public class Main {
 		private Resources mResources;
 
 		public MyContext() {
-			mResources = new Resources(null, new DisplayMetrics(), null);
+			mResources = new Resources(new AssetManager(), new DisplayMetrics(), null);
 		}
 
 		@Override
