@@ -1,4 +1,5 @@
 #include "android_content_res_AssetManager.h"
+#include "android_content_res_AssetManager_AssetInputStream.h"
 /*
  * Class:     android_content_res_AssetManager
  * Method:    list
@@ -6,7 +7,7 @@
  */
 JNIEXPORT jobjectArray JNICALL Java_android_content_res_AssetManager_list(
 		JNIEnv *env, jobject obj, jstring path) {
-	return null;
+	return NULL;
 }
 
 /*
@@ -46,7 +47,7 @@ JNIEXPORT void JNICALL Java_android_content_res_AssetManager_setLocale
  */
 JNIEXPORT jobjectArray JNICALL Java_android_content_res_AssetManager_getLocales(
 		JNIEnv *env, jobject obj) {
-	return null;
+	return NULL;
 }
 
 /*
@@ -66,7 +67,7 @@ JNIEXPORT void JNICALL Java_android_content_res_AssetManager_setConfiguration
  */
 JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_getResourceIdentifier(
 		JNIEnv *env, jobject obj, jstring type, jstring name, jstring defPackage){
-	return -1;
+	return 1;
 }
 
 /*
@@ -76,7 +77,7 @@ JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_getResourceIdentifi
  */
 JNIEXPORT jstring JNICALL Java_android_content_res_AssetManager_getResourceName(
 		JNIEnv *env, jobject obj, jint resid){
-	return null;
+	return NULL;
 }
 
 /*
@@ -86,7 +87,7 @@ JNIEXPORT jstring JNICALL Java_android_content_res_AssetManager_getResourceName(
  */
 JNIEXPORT jstring JNICALL Java_android_content_res_AssetManager_getResourcePackageName(
 		JNIEnv *env, jobject obj, jint resid){
-	return null;
+	return NULL;
 }
 
 /*
@@ -96,7 +97,7 @@ JNIEXPORT jstring JNICALL Java_android_content_res_AssetManager_getResourcePacka
  */
 JNIEXPORT jstring JNICALL Java_android_content_res_AssetManager_getResourceTypeName(
 		JNIEnv *env, jobject obj, jint resid){
-	return null;
+	return NULL;
 }
 
 /*
@@ -106,7 +107,7 @@ JNIEXPORT jstring JNICALL Java_android_content_res_AssetManager_getResourceTypeN
  */
 JNIEXPORT jstring JNICALL Java_android_content_res_AssetManager_getResourceEntryName(
 		JNIEnv *env, jobject obj, jint resid){
-	return null;
+	return NULL;
 }
 
 /*
@@ -116,7 +117,7 @@ JNIEXPORT jstring JNICALL Java_android_content_res_AssetManager_getResourceEntry
  */
 JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_openAsset(JNIEnv *env,
 		jobject obj, jstring fileName, jint accessMode){
-	return -1;
+	return 1;
 }
 
 /*
@@ -126,7 +127,7 @@ JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_openAsset(JNIEnv *e
  */
 JNIEXPORT jobject JNICALL Java_android_content_res_AssetManager_openAssetFd(
 		JNIEnv *env, jobject obj, jstring fileName, jlongArray outOffsets){
-	return null;
+	return NULL;
 }
 
 /*
@@ -136,7 +137,7 @@ JNIEXPORT jobject JNICALL Java_android_content_res_AssetManager_openAssetFd(
  */
 JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_openNonAssetNative(
 		JNIEnv *env, jobject obj, jint cookie, jstring fileName, jint accessMode){
-	return -1;
+	return 1;
 }
 
 /*
@@ -146,7 +147,7 @@ JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_openNonAssetNative(
  */
 JNIEXPORT jobject JNICALL Java_android_content_res_AssetManager_openNonAssetFdNative(
 		JNIEnv *env, jobject obj, jint cookie, jstring fileName, jlongArray outOffsets){
-	return null;
+	return NULL;
 }
 
 /*
@@ -166,7 +167,7 @@ JNIEXPORT void JNICALL Java_android_content_res_AssetManager_destroyAsset
  */
 JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_readAssetChar(
 		JNIEnv *env, jobject obj, jint asset){
-	return -1;
+	return 1;
 }
 
 /*
@@ -176,7 +177,7 @@ JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_readAssetChar(
  */
 JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_readAsset(JNIEnv *env,
 		jobject obj, jint asset, jbyteArray b, jint off, jint len){
-	return -1;
+	return 1;
 }
 
 /*
@@ -186,7 +187,7 @@ JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_readAsset(JNIEnv *e
  */
 JNIEXPORT jlong JNICALL Java_android_content_res_AssetManager_seekAsset(
 		JNIEnv *env, jobject obj, jint asset, jlong offset, jint whence){
-	return -1;
+	return 1;
 }
 
 /*
@@ -196,7 +197,7 @@ JNIEXPORT jlong JNICALL Java_android_content_res_AssetManager_seekAsset(
  */
 JNIEXPORT jlong JNICALL Java_android_content_res_AssetManager_getAssetLength(
 		JNIEnv *env, jobject obj, jint asset){
-	return -1;
+	return 1;
 }
 
 /*
@@ -206,7 +207,7 @@ JNIEXPORT jlong JNICALL Java_android_content_res_AssetManager_getAssetLength(
  */
 JNIEXPORT jlong JNICALL Java_android_content_res_AssetManager_getAssetRemainingLength(
 		JNIEnv *env, jobject obj, jint asset){
-	return -1;
+	return 1;
 }
 
 /*
@@ -216,7 +217,7 @@ JNIEXPORT jlong JNICALL Java_android_content_res_AssetManager_getAssetRemainingL
  */
 JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_loadResourceValue(
 		JNIEnv *env, jobject obj, jint ident, jshort density, jobject outValue, jboolean resolve){
-	return -1;
+	return 1;
 }
 
 /*
@@ -226,7 +227,7 @@ JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_loadResourceValue(
  */
 JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_loadResourceBagValue(
 		JNIEnv *env, jobject obj, jint ident, jint bagEntryId, jobject outValue, jboolean resolve){
-	return -1;
+	return 1;
 }
 
 /*
@@ -257,7 +258,7 @@ JNIEXPORT jboolean JNICALL Java_android_content_res_AssetManager_retrieveAttribu
  */
 JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_getArraySize(
 		JNIEnv *env, jobject obj, jint resource){
-	return -1;
+	return 1;
 }
 
 /*
@@ -267,7 +268,7 @@ JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_getArraySize(
  */
 JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_retrieveArray(
 		JNIEnv *env, jobject obj, jint resource, jintArray outValues){
-	return -1;
+	return 1;
 }
 
 /*
@@ -277,7 +278,7 @@ JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_retrieveArray(
  */
 JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_getStringBlockCount(
 		JNIEnv *env, jobject obj){
-	return -1;
+	return 1;
 }
 
 /*
@@ -287,7 +288,7 @@ JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_getStringBlockCount
  */
 JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_getNativeStringBlock(
 		JNIEnv *env, jobject obj, jint block){
-	return -1;
+	return 1;
 }
 
 /*
@@ -297,7 +298,7 @@ JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_getNativeStringBloc
  */
 JNIEXPORT jstring JNICALL Java_android_content_res_AssetManager_getCookieName(
 		JNIEnv *env, jobject obj, jint cookie){
-	return null;
+	return NULL;
 }
 
 /*
@@ -307,7 +308,7 @@ JNIEXPORT jstring JNICALL Java_android_content_res_AssetManager_getCookieName(
  */
 JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_getGlobalAssetCount(
 		JNIEnv *env, jclass cls){
-	return -1;
+	return 1;
 }
 
 /*
@@ -317,7 +318,7 @@ JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_getGlobalAssetCount
  */
 JNIEXPORT jstring JNICALL Java_android_content_res_AssetManager_getAssetAllocations(
 		JNIEnv *env, jclass cls){
-	return null;
+	return NULL;
 }
 
 /*
@@ -327,7 +328,7 @@ JNIEXPORT jstring JNICALL Java_android_content_res_AssetManager_getAssetAllocati
  */
 JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_getGlobalAssetManagerCount(
 		JNIEnv *env, jclass cls){
-	return -1;
+	return 1;
 }
 
 /*
@@ -337,7 +338,7 @@ JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_getGlobalAssetManag
  */
 JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_newTheme(JNIEnv *env,
 		jobject obj){
-	return -1;
+	return 1;
 }
 
 /*
@@ -376,7 +377,7 @@ JNIEXPORT void JNICALL Java_android_content_res_AssetManager_copyTheme
  */
 JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_loadThemeAttributeValue(
 		JNIEnv *env, jclass cls, jint theme, jint ident, jobject outValue, jboolean resolve){
-	return -1;
+	return 1;
 }
 
 /*
@@ -396,7 +397,7 @@ JNIEXPORT void JNICALL Java_android_content_res_AssetManager_dumpTheme
  */
 JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_openXmlAssetNative(
 		JNIEnv *env, jobject obj, jint cookie, jstring fileName){
-	return -1;
+	return 1;
 }
 
 /*
@@ -406,7 +407,7 @@ JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_openXmlAssetNative(
  */
 JNIEXPORT jobjectArray JNICALL Java_android_content_res_AssetManager_getArrayStringResource(
 		JNIEnv *env, jobject obj, jint arrayRes){
-	return null;
+	return NULL;
 }
 
 /*
@@ -416,7 +417,7 @@ JNIEXPORT jobjectArray JNICALL Java_android_content_res_AssetManager_getArrayStr
  */
 JNIEXPORT jintArray JNICALL Java_android_content_res_AssetManager_getArrayStringInfo(
 		JNIEnv *env, jobject obj, jint arrayRes){
-	return null;
+	return NULL;
 }
 
 /*
@@ -426,7 +427,7 @@ JNIEXPORT jintArray JNICALL Java_android_content_res_AssetManager_getArrayString
  */
 JNIEXPORT jintArray JNICALL Java_android_content_res_AssetManager_getArrayIntResource(
 		JNIEnv *env, jobject obj, jint arrayRes){
-	return null;
+	return NULL;
 }
 
 /*
