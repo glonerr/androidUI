@@ -8,10 +8,12 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentSender;
@@ -63,10 +65,11 @@ public class Main {
 		}
 	}
 
-	private static final class MyContext extends Context {
+	private static final class MyContext extends ContextWrapper {
 		private Resources mResources;
 
 		public MyContext() {
+			super(null);
 			mResources = new Resources(new AssetManager(), new DisplayMetrics(), null);
 		}
 
@@ -355,7 +358,7 @@ public class Main {
 		@Override
 		public Object getSystemService(String arg0) {
 			// TODO Auto-generated method stub
-			return null;
+			return super.getSystemService(arg0);
 		}
 
 		@Override

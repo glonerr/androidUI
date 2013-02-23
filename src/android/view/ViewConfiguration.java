@@ -28,38 +28,45 @@ import android.util.SparseArray;
 
 /**
  * Contains methods to standard constants used in the UI for timeouts, sizes, and distances.
+ * 包含在UI中的timeouts，sizes，distiances的标准常量
  */
 public class ViewConfiguration {
     /**
      * Defines the width of the horizontal scrollbar and the height of the vertical scrollbar in
      * dips
+     * 定义水平滚动条的宽度和垂直滚动条的高度
      */
     private static final int SCROLL_BAR_SIZE = 10;
 
     /**
      * Duration of the fade when scrollbars fade away in milliseconds
+     * 滚动条渐出的时间（毫秒级）
      */
     private static final int SCROLL_BAR_FADE_DURATION = 250;
 
     /**
      * Default delay before the scrollbars fade in milliseconds
+     * 滚动条渐入的默认延时
      */
     private static final int SCROLL_BAR_DEFAULT_DELAY = 300;
 
     /**
      * Defines the length of the fading edges in dips
+     * 定义渐进区域的长度
      */
     private static final int FADING_EDGE_LENGTH = 12;
 
     /**
      * Defines the duration in milliseconds of the pressed state in child
      * components.
+     * 进入到press状态的时长
      */
     private static final int PRESSED_STATE_DURATION = 64;
 
     /**
      * Defines the default duration in milliseconds before a press turns into
      * a long press
+     * 由press变成long press的时长
      */
     private static final int DEFAULT_LONG_PRESS_TIMEOUT = 500;
 

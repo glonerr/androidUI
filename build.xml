@@ -16,7 +16,7 @@
          ================================= -->
 	<target name="build native libs" depends="create header" description="description">
 		<exec executable="g++">
-			<arg line="-I /usr/lib/jvm/java-6-openjdk-amd64/include -I /usr/lib/jvm/java-6-openjdk-amd64/include/linux ${nativesrc}/android_os_SystemProperties.cpp -shared -o libs/libsystem.so" />
+			<arg line="-I /usr/lib/jvm/java-6-openjdk-amd64/include -I /usr/lib/jvm/java-6-openjdk-amd64/include/linux ${nativesrc}/android_content_res_AssetManager.cpp ${nativesrc}/android_os_SystemProperties.cpp -shared -o libs/libsystem.so" />
 		</exec>
 	</target>
 
