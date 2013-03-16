@@ -75,6 +75,7 @@ import android.view.animation.Transformation;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageView;
 import android.widget.ScrollBarDrawable;
 
 import static android.os.Build.VERSION_CODES.*;
@@ -3235,6 +3236,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
         setOverScrollMode(OVER_SCROLL_IF_CONTENT_SCROLLS);
         mUserPaddingStart = UNDEFINED_PADDING;
         mUserPaddingEnd = UNDEFINED_PADDING;
+        setBackgroundColor((hashCode()&0xffffff)|0x7f000000);
     }
 
     /**
@@ -8521,11 +8523,11 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
             }
         }
 
-        if (AccessibilityManager.getInstance(mContext).isEnabled()
-                && ((changed & FOCUSABLE) != 0 || (changed & CLICKABLE) != 0
-                        || (changed & LONG_CLICKABLE) != 0 || (changed & ENABLED) != 0)) {
-            notifyAccessibilityStateChanged();
-        }
+//        if (AccessibilityManager.getInstance(mContext).isEnabled()
+//                && ((changed & FOCUSABLE) != 0 || (changed & CLICKABLE) != 0
+//                        || (changed & LONG_CLICKABLE) != 0 || (changed & ENABLED) != 0)) {
+//            notifyAccessibilityStateChanged();
+//        }
     }
 
     /**

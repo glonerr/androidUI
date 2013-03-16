@@ -1,48 +1,58 @@
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
-import android.content.ContentResolver;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.events.DragDetectEvent;
+import org.eclipse.swt.events.DragDetectListener;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+import android.app.ContextImpl;
 import android.content.Context;
-import android.content.ContextWrapper;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.IntentSender;
-import android.content.IntentSender.SendIntentException;
-import android.content.ServiceConnection;
-import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.res.AssetManager;
-import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.content.res.Resources.Theme;
-import android.database.DatabaseErrorHandler;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDatabase.CursorFactory;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Handler;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Looper;
-import android.os.UserHandle;
-import android.util.DisplayMetrics;
-import android.view.CompatibilityInfoHolder;
-import android.view.Display;
+import android.util.Xml;
+import android.view.ContextThemeWrapper;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.AnalogClock;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 public class Main {
+	private static Canvas canvas;
+	private static final String[] icons = new String[] {
+			"res/friends_button_greet_icon_default.png",
+			"res/friends_button_greet_icon_noclick.png",
+			"res/friends_button_greet_icon_pressed.png",
+			"res/friends_button_reg_album_pressed.png",
+			"res/friends_button_reg_camera_pressed.png",
+			"res/friends_button_send_msg_icon_default.png",
+	// "res/friends_icon_logo.png", "res/friends_icon_reg_gg.jpg",
+	// "res/ic_launcher.png"
+	};
 
 	/**
 	 * @param args
@@ -50,11 +60,154 @@ public class Main {
 	 */
 	public static void main(String[] args) throws FileNotFoundException {
 		System.loadLibrary("system");
-		// TODO Auto-generated method stub
-		// System.setOut(new PrintStream("/home/lonerr/myView"));
-		// printClass(View.class);
-		View view = new View(new MyContext());
-		// System.out.println(view);
+		final Display display = new Display();
+		final Shell shell = new Shell(display);
+		shell.setBounds(0, 0, 640, 480);
+		shell.setLayout(new FillLayout());
+		canvas = new Canvas(shell, SWT.NULL);
+		canvas.setBackground(display.getSystemColor(SWT.COLOR_GRAY));
+		canvas.addMouseMoveListener(new MouseMoveListener() {
+
+			@Override
+			public void mouseMove(MouseEvent e) {
+				shell.setText((e.x - canvas.getBounds().x) + ":"
+						+ (e.y - canvas.getBounds().y));
+			}
+		});
+		canvas.addDragDetectListener(new DragDetectListener() {
+
+			@Override
+			public void dragDetected(DragDetectEvent e) {
+				System.out.println(e);
+			}
+		});
+
+		MyContext context = new MyContext();
+		context.startLoop();
+		final LinearLayout layout = new LinearLayout(context);
+		layout.setGravity(Gravity.CENTER);
+		// layout.setOrientation(LinearLayout.VERTICAL);
+		ImageView imageView = null;
+		for (String path : icons) {
+			imageView = new ImageView(context);
+			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+					ViewGroup.LayoutParams.WRAP_CONTENT,
+					ViewGroup.LayoutParams.WRAP_CONTENT, 1);
+			imageView.setLayoutParams(params);
+			imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+			imageView.setImageDrawable(new BitmapDrawable(new FileInputStream(
+					path)));
+			layout.addView(imageView);
+		}
+		Looper.prepare();
+		AnalogClock analogClock = new AnalogClock(context);
+		layout.addView(analogClock);
+		analogClock.onAttachedToWindow();
+		
+		RelativeLayout frameLayout = new RelativeLayout(context);
+		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+				ViewGroup.LayoutParams.WRAP_CONTENT,
+				ViewGroup.LayoutParams.FILL_PARENT, 1);
+		frameLayout.setLayoutParams(params);
+		for (String path : icons) {
+			imageView = new ImageView(context);
+			RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+					ViewGroup.LayoutParams.WRAP_CONTENT,
+					ViewGroup.LayoutParams.WRAP_CONTENT);
+			layoutParams.addRule(RelativeLayout.ALIGN_BASELINE);
+			imageView.setLayoutParams(layoutParams);
+			imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+			imageView.setImageDrawable(new BitmapDrawable(new FileInputStream(
+					path)));
+			frameLayout.addView(imageView);
+		}
+		layout.addView(frameLayout);
+
+		canvas.addControlListener(new ControlListener() {
+
+			@Override
+			public void controlResized(ControlEvent e) {
+				layout.measure(View.MeasureSpec.makeMeasureSpec(
+						canvas.getBounds().width, View.MeasureSpec.EXACTLY),
+						View.MeasureSpec.makeMeasureSpec(
+								canvas.getBounds().height,
+								View.MeasureSpec.EXACTLY));
+				layout.layout(canvas.getBounds().x, canvas.getBounds().y,
+						canvas.getBounds().width + canvas.getBounds().x,
+						canvas.getBounds().y + canvas.getBounds().height);
+			}
+
+			@Override
+			public void controlMoved(ControlEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+		
+		// Animation animation;
+		// try {
+		// XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+		// factory.setNamespaceAware(true);
+		// XmlPullParser xpp = factory.newPullParser();
+		// xpp.setInput(new InputStreamReader(new FileInputStream(
+		// "res/slide_in_left.xml")));
+		// animation = AnimationUtils.createAnimationFromXmlImpl(context, xpp,
+		// null, Xml.asAttributeSet(xpp));
+		// imageView.setAnimation(animation);
+		// animation.start();
+		// } catch (XmlPullParserException e1) {
+		// } catch (IOException e1) {
+		// }
+
+		final android.graphics.Canvas canvas2 = new android.graphics.Canvas();
+		canvas.addPaintListener(new PaintListener() {
+
+			@Override
+			public void paintControl(PaintEvent e) {
+				canvas2.setGC(e.gc);
+				e.gc.setForeground(e.gc.getDevice().getSystemColor(
+						SWT.COLOR_BLACK));
+				for (int startx = 0; startx < canvas.getBounds().width; startx += 10) {
+					e.gc.drawLine(startx, 0, startx, canvas.getBounds().height);
+				}
+				for (int starty = 0; starty < canvas.getBounds().height; starty += 10) {
+					e.gc.drawLine(0, starty, canvas.getBounds().width, starty);
+				}
+				layout.draw(canvas2);
+			}
+		});
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				while(!canvas.isDisposed()){
+					display.asyncExec(new Runnable() {
+						
+						@Override
+						public void run() {
+							canvas.redraw();
+						}
+					});
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}).start();
+		
+		canvas.redraw();
+		shell.open();
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch())
+				display.sleep();
+			else {
+			}
+		}
+		context.stopLoop();
+		display.dispose();
 	}
 
 	public static void printClass(Class<?> class1) {
@@ -62,586 +215,6 @@ public class Main {
 		Arrays.sort(methods, new MyComparator());
 		for (Method method : methods) {
 			System.out.println(method.toString());
-		}
-	}
-
-	private static final class MyContext extends ContextWrapper {
-		private Resources mResources;
-
-		public MyContext() {
-			super(null);
-			mResources = new Resources(new AssetManager(), new DisplayMetrics(), null);
-		}
-
-		@Override
-		public void unregisterReceiver(BroadcastReceiver arg0) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void unbindService(ServiceConnection arg0) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public boolean stopServiceAsUser(Intent arg0, UserHandle arg1) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		@Override
-		public boolean stopService(Intent arg0) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		@Override
-		public ComponentName startServiceAsUser(Intent arg0, UserHandle arg1) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public ComponentName startService(Intent arg0) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public void startIntentSender(IntentSender arg0, Intent arg1, int arg2,
-				int arg3, int arg4, Bundle arg5) throws SendIntentException {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void startIntentSender(IntentSender arg0, Intent arg1, int arg2,
-				int arg3, int arg4) throws SendIntentException {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public boolean startInstrumentation(ComponentName arg0, String arg1,
-				Bundle arg2) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		@Override
-		public void startActivity(Intent arg0, Bundle arg1) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void startActivity(Intent arg0) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void startActivities(Intent[] arg0, Bundle arg1) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void startActivities(Intent[] arg0) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		@Deprecated
-		public void setWallpaper(InputStream arg0) throws IOException {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		@Deprecated
-		public void setWallpaper(Bitmap arg0) throws IOException {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void setTheme(int arg0) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void sendStickyOrderedBroadcastAsUser(Intent arg0,
-				UserHandle arg1, BroadcastReceiver arg2, Handler arg3,
-				int arg4, String arg5, Bundle arg6) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void sendStickyOrderedBroadcast(Intent arg0,
-				BroadcastReceiver arg1, Handler arg2, int arg3, String arg4,
-				Bundle arg5) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void sendStickyBroadcastAsUser(Intent arg0, UserHandle arg1) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void sendStickyBroadcast(Intent arg0) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void sendOrderedBroadcastAsUser(Intent arg0, UserHandle arg1,
-				String arg2, BroadcastReceiver arg3, Handler arg4, int arg5,
-				String arg6, Bundle arg7) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void sendOrderedBroadcast(Intent arg0, String arg1,
-				BroadcastReceiver arg2, Handler arg3, int arg4, String arg5,
-				Bundle arg6) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void sendOrderedBroadcast(Intent arg0, String arg1) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void sendBroadcastAsUser(Intent arg0, UserHandle arg1,
-				String arg2) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void sendBroadcastAsUser(Intent arg0, UserHandle arg1) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void sendBroadcast(Intent arg0, String arg1) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void sendBroadcast(Intent arg0) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void revokeUriPermission(Uri arg0, int arg1) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void removeStickyBroadcastAsUser(Intent arg0, UserHandle arg1) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void removeStickyBroadcast(Intent arg0) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public Intent registerReceiverAsUser(BroadcastReceiver arg0,
-				UserHandle arg1, IntentFilter arg2, String arg3, Handler arg4) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public Intent registerReceiver(BroadcastReceiver arg0,
-				IntentFilter arg1, String arg2, Handler arg3) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public Intent registerReceiver(BroadcastReceiver arg0, IntentFilter arg1) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		@Deprecated
-		public Drawable peekWallpaper() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public SQLiteDatabase openOrCreateDatabase(String arg0, int arg1,
-				CursorFactory arg2, DatabaseErrorHandler arg3) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public SQLiteDatabase openOrCreateDatabase(String arg0, int arg1,
-				CursorFactory arg2) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public FileOutputStream openFileOutput(String arg0, int arg1)
-				throws FileNotFoundException {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public FileInputStream openFileInput(String arg0)
-				throws FileNotFoundException {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public void grantUriPermission(String arg0, Uri arg1, int arg2) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		@Deprecated
-		public int getWallpaperDesiredMinimumWidth() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		@Deprecated
-		public int getWallpaperDesiredMinimumHeight() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		@Deprecated
-		public Drawable getWallpaper() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public Theme getTheme() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public Object getSystemService(String arg0) {
-			// TODO Auto-generated method stub
-			return super.getSystemService(arg0);
-		}
-
-		@Override
-		public File getSharedPrefsFile(String arg0) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public SharedPreferences getSharedPreferences(String arg0, int arg1) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public Resources getResources() {
-			return mResources;
-		}
-
-		@Override
-		public String getPackageResourcePath() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String getPackageName() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public PackageManager getPackageManager() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String getPackageCodePath() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public File getObbDir() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public Looper getMainLooper() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public File getFilesDir() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public File getFileStreamPath(String arg0) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public File getExternalFilesDir(String arg0) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public File getExternalCacheDir() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public File getDir(String arg0, int arg1) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public File getDatabasePath(String arg0) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public ContentResolver getContentResolver() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public CompatibilityInfoHolder getCompatibilityInfo(int arg0) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public ClassLoader getClassLoader() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public File getCacheDir() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public AssetManager getAssets() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public ApplicationInfo getApplicationInfo() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public Context getApplicationContext() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String[] fileList() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public void enforceUriPermission(Uri arg0, String arg1, String arg2,
-				int arg3, int arg4, int arg5, String arg6) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void enforceUriPermission(Uri arg0, int arg1, int arg2,
-				int arg3, String arg4) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void enforcePermission(String arg0, int arg1, int arg2,
-				String arg3) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void enforceCallingUriPermission(Uri arg0, int arg1, String arg2) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void enforceCallingPermission(String arg0, String arg1) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void enforceCallingOrSelfUriPermission(Uri arg0, int arg1,
-				String arg2) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void enforceCallingOrSelfPermission(String arg0, String arg1) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public boolean deleteFile(String arg0) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		@Override
-		public boolean deleteDatabase(String arg0) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		@Override
-		public String[] databaseList() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public Context createPackageContextAsUser(String arg0, int arg1,
-				UserHandle arg2) throws NameNotFoundException {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public Context createPackageContext(String arg0, int arg1)
-				throws NameNotFoundException {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public Context createDisplayContext(Display arg0) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public Context createConfigurationContext(Configuration arg0) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		@Deprecated
-		public void clearWallpaper() throws IOException {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public int checkUriPermission(Uri arg0, String arg1, String arg2,
-				int arg3, int arg4, int arg5) {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public int checkUriPermission(Uri arg0, int arg1, int arg2, int arg3) {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public int checkPermission(String arg0, int arg1, int arg2) {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public int checkCallingUriPermission(Uri arg0, int arg1) {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public int checkCallingPermission(String arg0) {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public int checkCallingOrSelfUriPermission(Uri arg0, int arg1) {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public int checkCallingOrSelfPermission(String arg0) {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public boolean bindService(Intent arg0, ServiceConnection arg1, int arg2) {
-			// TODO Auto-generated method stub
-			return false;
 		}
 	}
 

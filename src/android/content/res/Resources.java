@@ -1259,14 +1259,14 @@ public class Resources {
             // To support generic XML files we will need to manually parse
             // out the attributes from the XML file (applying type information
             // contained in the resources and such).
-            XmlBlock.Parser parser = (XmlBlock.Parser)set;
-            AssetManager.applyStyle(
-                mTheme, defStyleAttr, defStyleRes,
-                parser != null ? parser.mParseState : 0, attrs,
-                        array.mData, array.mIndices);
-
-            array.mRsrcs = attrs;
-            array.mXml = parser;
+//            XmlPullParser parser = (XmlPullParser)set;
+//            AssetManager.applyStyle(
+//                mTheme, defStyleAttr, defStyleRes,
+//                parser != null ? parser.mParseState : 0, attrs,
+//                        array.mData, array.mIndices);
+//
+//            array.mRsrcs = attrs;
+//            array.mXml = parser;
 
             if (false) {
                 int[] data = array.mData;

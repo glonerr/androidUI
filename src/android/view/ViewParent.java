@@ -22,18 +22,20 @@ import android.view.accessibility.AccessibilityEvent;
 /**
  * Defines the responsibilities for a class that will be a parent of a View.
  * This is the API that a view sees when it wants to interact with its parent.
- * 
+ * 定义view的父容器的行为
  */
 public interface ViewParent {
     /**
      * Called when something has changed which has invalidated the layout of a
      * child of this view parent. This will schedule a layout pass of the view
      * tree.
+     * 当子view需要重新排版时调用此方法按view tree重新排版
      */
     public void requestLayout();
 
     /**
      * Indicates whether layout was requested on this view parent.
+     * 是否提出了重新排版申请
      *
      * @return true if layout was requested, false otherwise
      */
@@ -46,6 +48,7 @@ public interface ViewParent {
      * performance of the system. When no such a view is present in the
      * hierarchy, this optimization in unnecessary and might slightly reduce the
      * view hierarchy performance.
+     * 当子view需要将透明区域报告给窗口合成器时调用.
      * 
      * @param child the view requesting the transparent region computation
      * 
@@ -54,6 +57,7 @@ public interface ViewParent {
 
     /**
      * All or part of a child is dirty and needs to be redrawn.
+     * 声明child一部分或者全部非法需要重绘.
      * 
      * @param child The child which is dirty
      * @param r The area within the child that is invalid
