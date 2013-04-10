@@ -1,0 +1,53 @@
+		layout = new LinearLayout(context);
+		layout.setGravity(Gravity.CENTER);
+		// layout.setOrientation(LinearLayout.VERTICAL);
+		ImageView imageView = null;
+		for (String path : icons) {
+			imageView = new ImageView(context);
+			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+					ViewGroup.LayoutParams.WRAP_CONTENT,
+					ViewGroup.LayoutParams.WRAP_CONTENT);
+			imageView.setLayoutParams(params);
+			imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+			imageView.setImageDrawable(new BitmapDrawable(new FileInputStream(
+					path)));
+			layout.addView(imageView);
+		}
+//		Animation animation = AnimationUtils.loadAnimation(context,
+//				com.android.internal.R.anim.slide_in_left);
+//		imageView.setAnimation(animation);
+//		animation.start();
+
+		Looper.prepare();
+		AnalogClock analogClock = new AnalogClock(context);
+		layout.addView(analogClock);
+
+		RelativeLayout frameLayout = new RelativeLayout(context);
+		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+				ViewGroup.LayoutParams.WRAP_CONTENT,
+				ViewGroup.LayoutParams.MATCH_PARENT);
+		frameLayout.setLayoutParams(params);
+		View last = null;
+		int id = 0;
+		for (String path : icons) {
+			imageView = new ImageView(context);
+			imageView.setId(id++);
+			RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+					ViewGroup.LayoutParams.WRAP_CONTENT,
+					ViewGroup.LayoutParams.WRAP_CONTENT);
+			layoutParams.addRule(RelativeLayout.ALIGN_BASELINE);
+			if (last != null) {
+				layoutParams.addRule(RelativeLayout.RIGHT_OF, last.getId());
+				layoutParams.addRule(RelativeLayout.BELOW, last.getId());
+			} else {
+				layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+				layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+			}
+			last = imageView;
+			imageView.setLayoutParams(layoutParams);
+			imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+			imageView.setImageDrawable(new BitmapDrawable(new FileInputStream(
+					path)));
+			frameLayout.addView(imageView);
+		}
+		layout.addView(frameLayout);
