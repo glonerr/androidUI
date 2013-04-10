@@ -17,22 +17,20 @@
 package android.graphics;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Stack;
+
+import javax.microedition.khronos.opengles.GL;
+
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Transform;
 
 import android.text.GraphicsOperations;
 import android.text.SpannableString;
 import android.text.SpannedString;
 import android.text.TextUtils;
-
-import javax.microedition.khronos.opengles.GL;
-
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.graphics.Transform;
 
 /**
  * The Canvas class holds the "draw" calls. To draw something, you need 4 basic
@@ -234,7 +232,9 @@ public class Canvas {
 	 * 
 	 * @return true if the device that the current layer draws into is opaque
 	 */
-	public native boolean isOpaque();
+	public boolean isOpaque() {
+		return true;
+	}
 
 	/**
 	 * Returns the width of the current drawing layer
@@ -340,13 +340,12 @@ public class Canvas {
 	 * @return The value to pass to restoreToCount() to balance this save()
 	 */
 	public int save() {
-		gc.getTransform(transform);
-		float[] fs = new float[10];
-		fs[6] = gc.getClipping().x;
-		fs[7] = gc.getClipping().y;
-		fs[8] = gc.getClipping().width;
-		fs[9] = gc.getClipping().height;
-		transform.getElements(fs);
+		float[] fs = new float[13];
+		mMatrix.getValues(fs);
+		fs[9] = gc.getClipping().x;
+		fs[10] = gc.getClipping().y;
+		fs[11] = gc.getClipping().width;
+		fs[12] = gc.getClipping().height;
 		list.add(fs);
 		return list.size();
 	}
@@ -427,8 +426,9 @@ public class Canvas {
 	 */
 	public int saveLayerAlpha(float left, float top, float right, float bottom,
 			int alpha, int saveFlags) {
-		return native_saveLayerAlpha(mNativeCanvas, left, top, right, bottom,
-				alpha, saveFlags);
+		return 1;
+		// return native_saveLayerAlpha(mNativeCanvas, left, top, right, bottom,
+		// alpha, saveFlags);
 	}
 
 	/**
@@ -436,8 +436,11 @@ public class Canvas {
 	 * modifications to the matrix/clip state since the last save call. It is an
 	 * error to call restore() more times than save() was called.
 	 */
-	public void restore(){
-		
+	public void restore() {
+		float[] fs = list.remove(list.size() - 1);
+		mMatrix.setValues(fs);
+		applyMatrixToGC();
+		gc.setClipping((int) fs[9], (int) fs[10], (int) fs[11], (int) fs[12]);
 	}
 
 	/**
@@ -461,12 +464,12 @@ public class Canvas {
 	 */
 	public void restoreToCount(int saveCount) {
 		float[] fs = list.get(saveCount - 1);
-		transform.setElements(fs[0], fs[1], fs[2], fs[3], fs[4], fs[5]);
-		gc.setTransform(transform);
+		mMatrix.setValues(fs);
+		applyMatrixToGC();
 		for (int a = list.size(); a > saveCount; a--) {
 			list.remove(a - 1);
 		}
-		gc.setClipping((int) fs[6], (int) fs[7], (int) fs[8], (int) fs[9]);
+		gc.setClipping((int) fs[9], (int) fs[10], (int) fs[11], (int) fs[12]);
 	}
 
 	/**
@@ -478,8 +481,8 @@ public class Canvas {
 	 *            The distance to translate in Y
 	 */
 	public void translate(float dx, float dy) {
-		transform.translate(dx, dy);
-		gc.setTransform(transform);
+		mMatrix.preTranslate(dx, dy);
+		applyMatrixToGC();
 	}
 
 	/**
@@ -490,7 +493,10 @@ public class Canvas {
 	 * @param sy
 	 *            The amount to scale in Y
 	 */
-	public native void scale(float sx, float sy);
+	public void scale(float sx, float sy) {
+		mMatrix.preScale(sx, sy);
+		applyMatrixToGC();
+	}
 
 	/**
 	 * Preconcat the current matrix with the specified scale.
@@ -505,9 +511,8 @@ public class Canvas {
 	 *            The y-coord for the pivot point (unchanged by the scale)
 	 */
 	public final void scale(float sx, float sy, float px, float py) {
-		translate(px, py);
-		scale(sx, sy);
-		translate(-px, -py);
+		mMatrix.preScale(sx, sy, px, py);
+		applyMatrixToGC();
 	}
 
 	/**
@@ -517,8 +522,8 @@ public class Canvas {
 	 *            The amount to rotate, in degrees
 	 */
 	public void rotate(float degrees) {
-		transform.rotate(degrees);
-		gc.setTransform(transform);
+		mMatrix.preRotate(degrees);
+		applyMatrixToGC();
 	}
 
 	/**
@@ -532,9 +537,8 @@ public class Canvas {
 	 *            The y-coord for the pivot point (unchanged by the rotation)
 	 */
 	public final void rotate(float degrees, float px, float py) {
-		translate(px, py);
-		rotate(degrees);
-		translate(-px, -py);
+		mMatrix.preRotate(degrees, px, py);
+		applyMatrixToGC();
 	}
 
 	/**
@@ -545,7 +549,10 @@ public class Canvas {
 	 * @param sy
 	 *            The amount to skew in Y
 	 */
-	public native void skew(float sx, float sy);
+	public void skew(float sx, float sy){
+		mMatrix.preSkew(sx, sy);
+		applyMatrixToGC();
+	}
 
 	/**
 	 * Preconcat the current matrix with the specified matrix.
@@ -554,9 +561,8 @@ public class Canvas {
 	 *            The matrix to preconcatenate with the current matrix
 	 */
 	public void concat(Matrix matrix) {
-		transform.multiply(matrix.mTransform);
-		gc.setTransform(transform);
-		// gc.
+		mMatrix.preConcat(matrix);
+		applyMatrixToGC();
 		// native_concat(mNativeCanvas, matrix.native_instance);
 	}
 
@@ -575,8 +581,14 @@ public class Canvas {
 	 * @see #concat(Matrix)
 	 */
 	public void setMatrix(Matrix matrix) {
-		native_setMatrix(mNativeCanvas, matrix == null ? 0
-				: matrix.native_instance);
+		if(matrix == null){
+			mMatrix.reset();
+		}else{
+			mMatrix.set(matrix);
+		}
+		applyMatrixToGC();
+//		native_setMatrix(mNativeCanvas, matrix == null ? 0
+//				: matrix.native_instance);
 	}
 
 	/**
@@ -585,7 +597,11 @@ public class Canvas {
 	 */
 	@Deprecated
 	public void getMatrix(Matrix ctm) {
-		native_getCTM(mNativeCanvas, ctm.native_instance);
+		if(ctm == null){
+			ctm = new Matrix();
+		}
+		ctm.set(mMatrix);
+//		native_getCTM(mNativeCanvas, ctm.native_instance);
 	}
 
 	/**
@@ -598,6 +614,17 @@ public class Canvas {
 		// noinspection deprecation
 		getMatrix(m);
 		return m;
+	}
+
+	private void applyMatrixToGC() {
+		Transform transform = new Transform(gc.getDevice());
+		float[] values = new float[9];
+		mMatrix.getValues(values);
+		transform.setElements(values[Matrix.MSCALE_X],
+				values[Matrix.MSKEW_X], values[Matrix.MSKEW_Y],
+				values[Matrix.MSCALE_Y], values[Matrix.MTRANS_X],
+				values[Matrix.MTRANS_Y]);
+		gc.setTransform(transform);
 	}
 
 	/**
@@ -689,8 +716,11 @@ public class Canvas {
 	 *            The bottom of the rectangle to intersect with the current clip
 	 * @return true if the resulting clip is non-empty
 	 */
-	public native boolean clipRect(float left, float top, float right,
-			float bottom);
+	public boolean clipRect(float left, float top, float right, float bottom) {
+		gc.setClipping((int) left, (int) top, (int) (right - left),
+				(int) (bottom - left));
+		return true;
+	}
 
 	/**
 	 * Intersect the current clip with the specified rectangle, which is
@@ -872,7 +902,13 @@ public class Canvas {
 	 * @return true if the current clip is non-empty.
 	 */
 	public boolean getClipBounds(Rect bounds) {
-		return native_getClipBounds(mNativeCanvas, bounds);
+		Rectangle rectangle = gc.getClipping();
+		bounds.left = rectangle.x;
+		bounds.right = rectangle.x + rectangle.width;
+		bounds.top = rectangle.y;
+		bounds.bottom = rectangle.y + rectangle.height;
+		return true;
+		// return native_getClipBounds(mNativeCanvas, bounds);
 	}
 
 	/**
@@ -1082,24 +1118,22 @@ public class Canvas {
 	 */
 	public void drawRect(float left, float top, float right, float bottom,
 			Paint paint) {
-		drawRect(left, top, right, bottom, paint.getColor());
-		// native_drawRect(mNativeCanvas, left, top, right, bottom,
-		// paint.mNativePaint);
-	}
-
-	public void drawRect(float left, float top, float right, float bottom,
-			int color) {
 		Color bg = gc.getBackground();
 		int alpha = gc.getAlpha();
-		if ((color >> 24) != 0) {
-			gc.setAlpha((color >> 24) & 0xff);
+		if (paint != null) {
+			int color = paint.getColor();
+			if ((color >> 24) != 0) {
+				gc.setAlpha((color >> 24) & 0xff);
+			}
+			gc.setBackground(new Color(gc.getDevice(), new RGB(
+					(color >> 16) & 0xff, (color >> 8) & 0xff, (color & 0xff))));
 		}
-		gc.setBackground(new Color(gc.getDevice(), new RGB(
-				(color >> 16) & 0xff, (color >> 8) & 0xff, (color & 0xff))));
 		gc.fillRectangle((int) left, (int) top, (int) (right - left),
 				(int) (bottom - top));
 		gc.setBackground(bg);
 		gc.setAlpha(alpha);
+		// native_drawRect(mNativeCanvas, left, top, right, bottom,
+		// paint.mNativePaint);
 	}
 
 	/**
@@ -1349,7 +1383,6 @@ public class Canvas {
 			gc.drawImage(bitmap.mImage, src.left, src.top, src.width(),
 					src.height(), dst.left, dst.top, dst.width(), dst.height());
 		} else {
-			gc.setClipping(0, 0, 800, 1000);
 			gc.drawImage(bitmap.mImage, 0, 0, bitmap.getWidth(),
 					bitmap.getHeight(), dst.left, dst.top, dst.width(),
 					dst.height());
@@ -1611,8 +1644,19 @@ public class Canvas {
 	 *            The paint used for the text (e.g. color, size, style)
 	 */
 	public void drawText(String text, float x, float y, Paint paint) {
-		native_drawText(mNativeCanvas, text, 0, text.length(), x, y,
-				paint.mBidiFlags, paint.mNativePaint);
+		Color color = gc.getForeground();
+		int alpha = gc.getAlpha();
+		if (paint != null && paint.getTypeface() != null) {
+			Font font = gc.getFont();
+			gc.setFont(new Font(null, paint.getTypeface().mFontData));
+			gc.setForeground(new Color(null, (paint.mColor >> 16) & 0xff,
+					(paint.mColor >> 8) & 0xff, paint.mColor & 0xff));
+			gc.drawText(text, (int) x, (int) y, true);
+			gc.setFont(font);
+			// gc.setAlpha(paint.mColor>>24);
+		}
+		gc.setAlpha(alpha);
+		gc.setForeground(color);
 	}
 
 	/**
@@ -1959,7 +2003,9 @@ public class Canvas {
 	private static native int native_saveLayerAlpha(int nativeCanvas, float l,
 			float t, float r, float b, int alpha, int layerFlags);
 
-	private static native void native_concat(int nCanvas, int nMatrix);
+	private static void native_concat(int nCanvas, int nMatrix) {
+
+	}
 
 	private static native void native_setMatrix(int nCanvas, int nMatrix);
 
@@ -2089,36 +2135,27 @@ public class Canvas {
 
 	private static native void finalizer(int nativeCanvas);
 
-	private org.eclipse.swt.widgets.Canvas canvas;
 	private GC gc;
-	private Transform transform;
 	private ArrayList<float[]> list = new ArrayList<float[]>();
 	private float[] elements = new float[6];
-
-	public void setCanvas(org.eclipse.swt.widgets.Canvas canvas) {
-		this.canvas = canvas;
-		if (gc == null)
-			gc = new GC(canvas);
-		if (transform == null)
-			transform = new Transform(gc.getDevice());
-		gc.getTransform(transform);
-		gc.setTransform(transform);
-	}
+	private Matrix mMatrix = new Matrix();
 
 	public void setGC(GC gc) {
 		if (this.gc != gc) {
 			this.gc = gc;
-			transform = new Transform(gc.getDevice());
-			gc.getTransform(transform);
+			Transform transform = new Transform(gc.getDevice());
+			float[] values = new float[9];
+			mMatrix.getValues(values);
+			transform.setElements(values[Matrix.MSCALE_X],
+					values[Matrix.MSKEW_X], values[Matrix.MSKEW_Y],
+					values[Matrix.MSCALE_Y], values[Matrix.MTRANS_X],
+					values[Matrix.MTRANS_Y]);
 			gc.setTransform(transform);
 		}
 	}
 
-	public static void printTransform(Transform transform) {
-		float[] fs = new float[6];
-		transform.getElements(fs);
-		System.out.print(fs[4] + "+" + fs[5]);
-		System.out.println();
+	public GC getGC() {
+		return gc;
 	}
 
 }

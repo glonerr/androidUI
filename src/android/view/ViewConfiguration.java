@@ -327,7 +327,7 @@ public class ViewConfiguration {
 
         ViewConfiguration configuration = sConfigurations.get(density);
         if (configuration == null) {
-//            configuration = new ViewConfiguration(context);
+            configuration = new ViewConfiguration(context);
             sConfigurations.put(density, configuration);
         }
 

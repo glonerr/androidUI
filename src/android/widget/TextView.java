@@ -486,7 +486,7 @@ public class TextView extends View implements ViewTreeObserver.OnPreDrawListener
          * to be able to parse the appearance first and then let specific tags
          * for this View override it.
          */
-        TypedArray a = theme.obtainStyledAttributes(
+        TypedArray a = context.obtainStyledAttributes(
                     attrs, com.android.internal.R.styleable.TextViewAppearance, defStyle, 0);
         TypedArray appearance = null;
         int ap = a.getResourceId(
@@ -565,7 +565,7 @@ public class TextView extends View implements ViewTreeObserver.OnPreDrawListener
         boolean password = false;
         int inputType = EditorInfo.TYPE_NULL;
 
-        a = theme.obtainStyledAttributes(
+        a = context.obtainStyledAttributes(
                     attrs, com.android.internal.R.styleable.TextView, defStyle, 0);
 
         int n = a.getIndexCount();

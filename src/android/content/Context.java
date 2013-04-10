@@ -368,7 +368,7 @@ public abstract class Context {
      *
      * @see Resources.Theme#obtainStyledAttributes(int[])
      */
-    public final TypedArray obtainStyledAttributes(
+    public TypedArray obtainStyledAttributes(
             int[] attrs) {
         return getTheme().obtainStyledAttributes(attrs);
     }
@@ -380,7 +380,7 @@ public abstract class Context {
      *
      * @see Resources.Theme#obtainStyledAttributes(int, int[])
      */
-    public final TypedArray obtainStyledAttributes(
+    public TypedArray obtainStyledAttributes(
             int resid, int[] attrs) throws Resources.NotFoundException {
         return getTheme().obtainStyledAttributes(resid, attrs);
     }
@@ -392,7 +392,7 @@ public abstract class Context {
      *
      * @see Resources.Theme#obtainStyledAttributes(AttributeSet, int[], int, int)
      */
-    public final TypedArray obtainStyledAttributes(
+    public TypedArray obtainStyledAttributes(
             AttributeSet set, int[] attrs) {
         return getTheme().obtainStyledAttributes(set, attrs, 0, 0);
     }
@@ -404,7 +404,7 @@ public abstract class Context {
      *
      * @see Resources.Theme#obtainStyledAttributes(AttributeSet, int[], int, int)
      */
-    public final TypedArray obtainStyledAttributes(
+    public TypedArray obtainStyledAttributes(
             AttributeSet set, int[] attrs, int defStyleAttr, int defStyleRes) {
         return getTheme().obtainStyledAttributes(
             set, attrs, defStyleAttr, defStyleRes);

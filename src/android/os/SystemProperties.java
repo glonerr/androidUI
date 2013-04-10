@@ -34,13 +34,27 @@ public class SystemProperties
 
     private static final ArrayList<Runnable> sChangeCallbacks = new ArrayList<Runnable>();
 
-    private static native String native_get(String key);
-    private static native String native_get(String key, String def);
-    private static native int native_get_int(String key, int def);
-    private static native long native_get_long(String key, long def);
-    private static native boolean native_get_boolean(String key, boolean def);
-    private static native void native_set(String key, String def);
-    private static native void native_add_change_callback();
+    private static String native_get(String key){
+    	return null;
+    }
+    private static String native_get(String key, String def){
+    	return def;
+    }
+    private static int native_get_int(String key, int def){
+    	return def;
+    }
+    private static long native_get_long(String key, long def){
+    	return def;
+    }
+    private static boolean native_get_boolean(String key, boolean def){
+    	return def;
+    }
+    private static void native_set(String key, String def){
+    	
+    }
+    private static void native_add_change_callback(){
+    	
+    }
 
     /**
      * Get the value for the given key.
@@ -78,7 +92,7 @@ public class SystemProperties
         if (key.length() > PROP_NAME_MAX) {
             throw new IllegalArgumentException("key.length > " + PROP_NAME_MAX);
         }
-        return native_get_int(key, def);
+        return native_get_int(key,def);
     }
 
     /**

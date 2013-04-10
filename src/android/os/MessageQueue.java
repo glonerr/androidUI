@@ -50,8 +50,8 @@ public class MessageQueue {
 
     private native void nativeInit();
     private native void nativeDestroy();
-    private native void nativePollOnce(int ptr, int timeoutMillis);
-    private native void nativeWake(int ptr);
+    private void nativePollOnce(int ptr, int timeoutMillis){}
+    private void nativeWake(int ptr){}
 
     /**
      * Callback interface for discovering when a thread is going to block

@@ -16,6 +16,9 @@
 
 package android.widget;
 
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Transform;
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Resources;
@@ -26,6 +29,7 @@ import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -163,7 +167,6 @@ public class ImageView extends View {
 
     private void initImageView() {
         mMatrix     = new Matrix();
-    	mMatrix.postRotate(10);
         mScaleType  = ScaleType.FIT_CENTER;
     }
 
@@ -959,7 +962,6 @@ public class ImageView extends View {
         if (mDrawable == null) {
             return; // couldn't resolve the URI
         }
-
         if (mDrawableWidth == 0 || mDrawableHeight == 0) {
             return;     // nothing to draw (empty bounds)
         }

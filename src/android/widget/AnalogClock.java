@@ -23,7 +23,6 @@ import android.content.BroadcastReceiver;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.text.format.DateUtils;
@@ -32,8 +31,6 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.RemoteViews.RemoteView;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.TimeZone;
 
 /**
@@ -74,39 +71,21 @@ public class AnalogClock extends View {
                        int defStyle) {
         super(context, attrs, defStyle);
         Resources r = mContext.getResources();
-//        TypedArray a =
-//                context.obtainStyledAttributes(
-//                        attrs, com.android.internal.R.styleable.AnalogClock, defStyle, 0);
+        TypedArray a =
+                context.obtainStyledAttributes(
+                        attrs, com.android.internal.R.styleable.AnalogClock, defStyle, 0);
 
-//        mDial = a.getDrawable(com.android.internal.R.styleable.AnalogClock_dial);
-        try {
-			mDial = new BitmapDrawable(new FileInputStream("res/clock_dial.png"));
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+        mDial = a.getDrawable(com.android.internal.R.styleable.AnalogClock_dial);
         if (mDial == null) {
             mDial = r.getDrawable(com.android.internal.R.drawable.clock_dial);
         }
 
-//        mHourHand = a.getDrawable(com.android.internal.R.styleable.AnalogClock_hand_hour);
-        try {
-			mHourHand = new BitmapDrawable(new FileInputStream("res/clock_hand_hour.png"));
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        mHourHand = a.getDrawable(com.android.internal.R.styleable.AnalogClock_hand_hour);
         if (mHourHand == null) {
             mHourHand = r.getDrawable(com.android.internal.R.drawable.clock_hand_hour);
         }
 
-//        mMinuteHand = a.getDrawable(com.android.internal.R.styleable.AnalogClock_hand_minute);
-        try {
-			mMinuteHand = new BitmapDrawable(new FileInputStream("res/clock_hand_minute.png"));
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        mMinuteHand = a.getDrawable(com.android.internal.R.styleable.AnalogClock_hand_minute);
         if (mMinuteHand == null) {
             mMinuteHand = r.getDrawable(com.android.internal.R.drawable.clock_hand_minute);
         }
@@ -185,7 +164,7 @@ public class AnalogClock extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        System.out.println("call onDraw");
+
         boolean changed = mChanged;
         if (changed) {
             mChanged = false;
@@ -245,7 +224,7 @@ public class AnalogClock extends View {
     }
 
     private void onTimeChanged() {
-//        mCalendar.setToNow();
+        mCalendar.setToNow();
 
         int hour = mCalendar.hour;
         int minute = mCalendar.minute;

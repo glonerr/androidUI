@@ -100,6 +100,8 @@ import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.eclipse.swt.graphics.Color;
+
 /**
  * <p>
  * This class represents the basic building block for user interface components. A View
@@ -10766,6 +10768,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * @see #invalidate()
      */
     public void postInvalidateOnAnimation() {
+    	invalidate();
         // We try only with the AttachInfo because there's no point in invalidating
         // if we are not attached to our window
         final AttachInfo attachInfo = mAttachInfo;
@@ -17606,7 +17609,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * A set of information given to a view when it is attached to its parent
      * window.
      */
-    static class AttachInfo {
+    public static class AttachInfo {
         interface Callbacks {
             void playSoundEffect(int effectId);
             boolean performHapticFeedback(int effectId, boolean always);
@@ -17940,7 +17943,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
          *
          * @param handler the events handler the view must use
          */
-        AttachInfo(IWindowSession session, IWindow window, Display display,
+        public AttachInfo(IWindowSession session, IWindow window, Display display,
                 ViewRootImpl viewRootImpl, Handler handler, Callbacks effectPlayer) {
             mSession = session;
             mWindow = window;

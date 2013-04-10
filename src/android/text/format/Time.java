@@ -18,6 +18,7 @@ package android.text.format;
 
 import android.content.res.Resources;
 
+import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -480,7 +481,10 @@ public class Time {
     /**
      * Sets the time of the given Time object to the current time.
      */
-    native public void setToNow();
+    public void setToNow(){
+    	Date date = new Date(System.currentTimeMillis());
+    	set(date.getSeconds(),date.getMinutes(),date.getHours(),date.getDay(),date.getMonth(),date.getYear());
+    }
 
     /**
      * Converts this time to milliseconds. Suitable for interacting with the
@@ -530,7 +534,9 @@ public class Time {
      * to read back the same milliseconds that you set with {@link #set(long)}
      * or {@link #set(Time)} or after parsing a date string.
      */
-    native public long toMillis(boolean ignoreDst);
+    public long toMillis(boolean ignoreDst){
+    	return new Date(year,month,monthDay,hour,minute,second).getTime();
+    }
 
     /**
      * Sets the fields in this Time object given the UTC milliseconds.  After
@@ -539,7 +545,11 @@ public class Time {
      *
      * @param millis the time in UTC milliseconds since the epoch.
      */
-    native public void set(long millis);
+    public void set(long millis){
+    	this.millis = millis;
+    }
+    
+    private long millis;
 
     /**
      * Format according to RFC 2445 DATETIME type.

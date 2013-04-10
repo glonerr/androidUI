@@ -1537,6 +1537,7 @@ public class LinearLayout extends ViewGroup {
      * @see #onLayout(boolean, int, int, int, int)
      */
     void layoutHorizontal() {
+    	System.out.println("start layout");
         final boolean isLayoutRtl = isLayoutRtl();
         final int paddingTop = mPaddingTop;
 

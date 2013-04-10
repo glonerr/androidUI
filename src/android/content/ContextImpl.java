@@ -1,15 +1,20 @@
+package android.content;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentSender;
@@ -39,11 +44,11 @@ import android.view.CompatibilityInfoHolder;
 import android.view.ContextThemeWrapper;
 import android.view.Display;
 
-public class MyContext extends ContextThemeWrapper {
+public class ContextImpl extends ContextThemeWrapper {
 
 	private Resources mResources;
 
-	public MyContext() {
+	public ContextImpl() {
 		mResources = new Resources(new AssetManager(), new DisplayMetrics(),
 				null);
 	}
@@ -435,8 +440,7 @@ public class MyContext extends ContextThemeWrapper {
 
 	@Override
 	public ClassLoader getClassLoader() {
-		// TODO Auto-generated method stub
-		return null;
+		return ClassLoader.getSystemClassLoader();
 	}
 
 	@Override
@@ -510,9 +514,56 @@ public class MyContext extends ContextThemeWrapper {
 			mThemeResource = Resources.selectDefaultTheme(mThemeResource,
 					Build.VERSION_CODES.ICE_CREAM_SANDWICH);
 			mTheme = mResources.newTheme();
+			mAttrs = new ArrayList<String>();
 			mTheme.applyStyle(mThemeResource, true);
 		}
 		return mTheme;
+	}
+
+	private ArrayList<String> mAttrs;
+
+	private void loadAttr(int resId) {
+		try {
+			XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+			factory.setNamespaceAware(true);
+			XmlPullParser xpp = factory.newPullParser();
+			xpp.setInput(new InputStreamReader(new FileInputStream(
+					"res/attrs.xml")));
+			xpp.next();
+			int eventType = xpp.getEventType();
+			while (eventType != XmlPullParser.END_DOCUMENT) {
+				switch (eventType) {
+				case XmlPullParser.START_TAG:
+					if ("attr".equals(xpp.getName())) {
+						addAttrs(xpp);
+					}
+					break;
+				case XmlPullParser.TEXT:
+					System.out.println(xpp.getText());
+					break;
+				default:
+					break;
+				}
+				eventType = xpp.next();
+			}// eof-while
+		} catch (XmlPullParserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void addAttrs(XmlPullParser xpp) {
+		Attr attr = new Attr();
+		attr.name = xpp.getAttributeValue(0);
+		attr.format = xpp.getAttributeValue(1);
+		System.out.println("******" + xpp.getText() + "+"
+				+ xpp.getAttributeCount());
 	}
 
 	@Override
@@ -627,11 +678,13 @@ public class MyContext extends ContextThemeWrapper {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
+
 	private boolean running;
-	public void stopLoop(){
+
+	public void stopLoop() {
 		running = false;
 	}
+
 	public void startLoop() {
 		running = true;
 		new Thread(new Runnable() {
@@ -642,7 +695,7 @@ public class MyContext extends ContextThemeWrapper {
 					for (BroadcastReceiver receiver : receivers) {
 						Intent intent = new Intent();
 						intent.setAction(Intent.ACTION_ADVANCED_SETTINGS_CHANGED);
-						receiver.onReceive(MyContext.this, intent);
+						receiver.onReceive(ContextImpl.this, intent);
 					}
 					try {
 						Thread.sleep(2000);
@@ -654,5 +707,17 @@ public class MyContext extends ContextThemeWrapper {
 			}
 		}).start();
 
+	}
+
+	public static class Attr {
+		private String name;
+		private String format;
+		private ArrayList<PairData> enums;
+		private ArrayList<PairData> flags;
+
+		public static class PairData {
+			private String name;
+			private String value;
+		}
 	}
 }

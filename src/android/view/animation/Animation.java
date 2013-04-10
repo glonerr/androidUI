@@ -23,6 +23,7 @@ import android.os.Handler;
 import android.os.SystemProperties;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import dalvik.system.CloseGuard;
 
 /**
  * Abstraction for an Animation that can be applied to Views, Surfaces, or
@@ -205,6 +206,7 @@ public abstract class Animation implements Cloneable {
     Transformation mTransformation = new Transformation();
     Transformation mPreviousTransformation = new Transformation();
 
+    private final CloseGuard guard = CloseGuard.get();
 
     private Handler mListenerHandler;
     private Runnable mOnStart;
@@ -227,50 +229,33 @@ public abstract class Animation implements Cloneable {
      * @param attrs the set of attributes holding the animation parameters
      */
     public Animation(Context context, AttributeSet attrs) {
-//        TypedArray a = context.obtainStyledAttributes(attrs, com.android.internal.R.styleable.Animation);
-//
-//        setDuration((long) a.getInt(com.android.internal.R.styleable.Animation_duration, 0));
-//        setStartOffset((long) a.getInt(com.android.internal.R.styleable.Animation_startOffset, 0));
-//        
-//        setFillEnabled(a.getBoolean(com.android.internal.R.styleable.Animation_fillEnabled, mFillEnabled));
-//        setFillBefore(a.getBoolean(com.android.internal.R.styleable.Animation_fillBefore, mFillBefore));
-//        setFillAfter(a.getBoolean(com.android.internal.R.styleable.Animation_fillAfter, mFillAfter));
-//
-//        setRepeatCount(a.getInt(com.android.internal.R.styleable.Animation_repeatCount, mRepeatCount));
-//        setRepeatMode(a.getInt(com.android.internal.R.styleable.Animation_repeatMode, RESTART));
-//
-//        setZAdjustment(a.getInt(com.android.internal.R.styleable.Animation_zAdjustment, ZORDER_NORMAL));
-//        
-//        setBackgroundColor(a.getInt(com.android.internal.R.styleable.Animation_background, 0));
-//
-//        setDetachWallpaper(a.getBoolean(com.android.internal.R.styleable.Animation_detachWallpaper, false));
+        TypedArray a = context.obtainStyledAttributes(attrs, com.android.internal.R.styleable.Animation);
 
-//        final int resID = a.getResourceId(com.android.internal.R.styleable.Animation_interpolator, 0);
-//
-//        a.recycle();
-    	
-//    	setDuration((long) a.getInt(com.android.internal.R.styleable.Animation_duration, 0));
-//        setStartOffset((long) a.getInt(com.android.internal.R.styleable.Animation_startOffset, 0));
-//        
-//        setFillEnabled(a.getBoolean(com.android.internal.R.styleable.Animation_fillEnabled, mFillEnabled));
-//        setFillBefore(a.getBoolean(com.android.internal.R.styleable.Animation_fillBefore, mFillBefore));
-//        setFillAfter(a.getBoolean(com.android.internal.R.styleable.Animation_fillAfter, mFillAfter));
-//
-//        setRepeatCount(a.getInt(com.android.internal.R.styleable.Animation_repeatCount, mRepeatCount));
-//        setRepeatMode(a.getInt(com.android.internal.R.styleable.Animation_repeatMode, RESTART));
-//
-//        setZAdjustment(a.getInt(com.android.internal.R.styleable.Animation_zAdjustment, ZORDER_NORMAL));
-//        
-//        setBackgroundColor(a.getInt(com.android.internal.R.styleable.Animation_background, 0));
-//
-//        setDetachWallpaper(a.getBoolean(com.android.internal.R.styleable.Animation_detachWallpaper, false));
+        setDuration((long) a.getInt(com.android.internal.R.styleable.Animation_duration, 0));
+        setStartOffset((long) a.getInt(com.android.internal.R.styleable.Animation_startOffset, 0));
+        
+        setFillEnabled(a.getBoolean(com.android.internal.R.styleable.Animation_fillEnabled, mFillEnabled));
+        setFillBefore(a.getBoolean(com.android.internal.R.styleable.Animation_fillBefore, mFillBefore));
+        setFillAfter(a.getBoolean(com.android.internal.R.styleable.Animation_fillAfter, mFillAfter));
 
+        setRepeatCount(a.getInt(com.android.internal.R.styleable.Animation_repeatCount, mRepeatCount));
+        setRepeatMode(a.getInt(com.android.internal.R.styleable.Animation_repeatMode, RESTART));
 
-//        if (resID > 0) {
-//            setInterpolator(context, resID);
-//        }
+        setZAdjustment(a.getInt(com.android.internal.R.styleable.Animation_zAdjustment, ZORDER_NORMAL));
+        
+        setBackgroundColor(a.getInt(com.android.internal.R.styleable.Animation_background, 0));
 
-//        ensureInterpolator();
+        setDetachWallpaper(a.getBoolean(com.android.internal.R.styleable.Animation_detachWallpaper, false));
+
+        final int resID = a.getResourceId(com.android.internal.R.styleable.Animation_interpolator, 0);
+
+        a.recycle();
+
+        if (resID > 0) {
+            setInterpolator(context, resID);
+        }
+
+        ensureInterpolator();
     }
 
     @Override
@@ -314,6 +299,7 @@ public abstract class Animation implements Cloneable {
         if (mStarted && !mEnded) {
             fireAnimationEnd();
             mEnded = true;
+            guard.close();
         }
         // Make sure we move the animation to the end
         mStartTime = Long.MIN_VALUE;
@@ -326,6 +312,7 @@ public abstract class Animation implements Cloneable {
     public void detach() {
         if (mStarted && !mEnded) {
             mEnded = true;
+            guard.close();
             fireAnimationEnd();
         }
     }
@@ -869,6 +856,7 @@ public abstract class Animation implements Cloneable {
                 fireAnimationStart();
                 mStarted = true;
                 if (USE_CLOSEGUARD) {
+                    guard.open("cancel or detach or getTransformation");
                 }
             }
 
@@ -886,6 +874,7 @@ public abstract class Animation implements Cloneable {
             if (mRepeatCount == mRepeated) {
                 if (!mEnded) {
                     mEnded = true;
+                    guard.close();
                     fireAnimationEnd();
                 }
             } else {
@@ -1061,6 +1050,9 @@ public abstract class Animation implements Cloneable {
 
     protected void finalize() throws Throwable {
         try {
+            if (guard != null) {
+                guard.warnIfOpen();
+            }
         } finally {
             super.finalize();
         }

@@ -16,6 +16,10 @@
 
 package android.os;
 
+import org.eclipse.swt.widgets.Display;
+
+import test.Main;
+
 import android.util.Log;
 import android.util.Printer;
 import android.util.PrefixPrinter;
