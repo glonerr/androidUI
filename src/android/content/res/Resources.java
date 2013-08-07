@@ -164,7 +164,7 @@ public class Resources {
      * @param config Desired device configuration to consider when 
      *               selecting/computing resource values (optional).
      */
-	public Resources(AssetManager assets, DisplayMetrics metrics, Configuration config) {
+    public Resources(AssetManager assets, DisplayMetrics metrics, Configuration config) {
         this(assets, metrics, config, null);
     }
 

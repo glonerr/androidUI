@@ -75,7 +75,6 @@ import android.view.animation.Transformation;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ImageView;
 import android.widget.ScrollBarDrawable;
 
 import static android.os.Build.VERSION_CODES.*;
@@ -99,8 +98,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import org.eclipse.swt.graphics.Color;
 
 /**
  * <p>
@@ -3234,11 +3231,10 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
                 (TEXT_ALIGNMENT_DEFAULT << PFLAG2_TEXT_ALIGNMENT_MASK_SHIFT) |
                 (PFLAG2_TEXT_ALIGNMENT_RESOLVED_DEFAULT) |
                 (IMPORTANT_FOR_ACCESSIBILITY_DEFAULT << PFLAG2_IMPORTANT_FOR_ACCESSIBILITY_SHIFT);
-//        mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
+        mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
         setOverScrollMode(OVER_SCROLL_IF_CONTENT_SCROLLS);
         mUserPaddingStart = UNDEFINED_PADDING;
         mUserPaddingEnd = UNDEFINED_PADDING;
-        setBackgroundColor((hashCode()&0xffffff)|0x7f000000);
     }
 
     /**
@@ -8525,11 +8521,11 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
             }
         }
 
-//        if (AccessibilityManager.getInstance(mContext).isEnabled()
-//                && ((changed & FOCUSABLE) != 0 || (changed & CLICKABLE) != 0
-//                        || (changed & LONG_CLICKABLE) != 0 || (changed & ENABLED) != 0)) {
-//            notifyAccessibilityStateChanged();
-//        }
+        if (AccessibilityManager.getInstance(mContext).isEnabled()
+                && ((changed & FOCUSABLE) != 0 || (changed & CLICKABLE) != 0
+                        || (changed & LONG_CLICKABLE) != 0 || (changed & ENABLED) != 0)) {
+            notifyAccessibilityStateChanged();
+        }
     }
 
     /**
@@ -10768,7 +10764,6 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * @see #invalidate()
      */
     public void postInvalidateOnAnimation() {
-    	invalidate();
         // We try only with the AttachInfo because there's no point in invalidating
         // if we are not attached to our window
         final AttachInfo attachInfo = mAttachInfo;
@@ -17609,7 +17604,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * A set of information given to a view when it is attached to its parent
      * window.
      */
-    public static class AttachInfo {
+    static class AttachInfo {
         interface Callbacks {
             void playSoundEffect(int effectId);
             boolean performHapticFeedback(int effectId, boolean always);
@@ -17943,7 +17938,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
          *
          * @param handler the events handler the view must use
          */
-        public AttachInfo(IWindowSession session, IWindow window, Display display,
+        AttachInfo(IWindowSession session, IWindow window, Display display,
                 ViewRootImpl viewRootImpl, Handler handler, Callbacks effectPlayer) {
             mSession = session;
             mWindow = window;

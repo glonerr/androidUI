@@ -16,379 +16,443 @@
 
 package android.graphics;
 
+import com.lonerr.bridge.graphics.RegionBridge;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Region implements Parcelable {
-    /**
-     * @hide
-     */
-    public final int mNativeRegion;
+	/**
+	 * @hide
+	 */
+	public final int mNativeRegion;
 
-    // the native values for these must match up with the enum in SkRegion.h
-    public enum Op {
-        DIFFERENCE(0),
-        INTERSECT(1),
-        UNION(2),
-        XOR(3),
-        REVERSE_DIFFERENCE(4),
-        REPLACE(5);
+	// the native values for these must match up with the enum in SkRegion.h
+	public enum Op {
+		DIFFERENCE(0), INTERSECT(1), UNION(2), XOR(3), REVERSE_DIFFERENCE(4), REPLACE(
+				5);
 
-        Op(int nativeInt) {
-            this.nativeInt = nativeInt;
-        }
+		Op(int nativeInt) {
+			this.nativeInt = nativeInt;
+		}
 
-        /**
-         * @hide
-         */
-        public final int nativeInt;
-    }
+		/**
+		 * @hide
+		 */
+		public final int nativeInt;
+	}
 
-    /** Create an empty region
-    */
-    public Region() {
-        this(nativeConstructor());
-    }
+	/**
+	 * Create an empty region
+	 */
+	public Region() {
+		this(nativeConstructor());
+	}
 
-    /** Return a copy of the specified region
-    */
-    public Region(Region region) {
-        this(nativeConstructor());
-        nativeSetRegion(mNativeRegion, region.mNativeRegion);
-    }
+	/**
+	 * Return a copy of the specified region
+	 */
+	public Region(Region region) {
+		this(nativeConstructor());
+		nativeSetRegion(mNativeRegion, region.mNativeRegion);
+	}
 
-    /** Return a region set to the specified rectangle
-    */
-    public Region(Rect r) {
-        mNativeRegion = nativeConstructor();
-        nativeSetRect(mNativeRegion, r.left, r.top, r.right, r.bottom);
-    }
+	/**
+	 * Return a region set to the specified rectangle
+	 */
+	public Region(Rect r) {
+		mNativeRegion = nativeConstructor();
+		nativeSetRect(mNativeRegion, r.left, r.top, r.right, r.bottom);
+	}
 
-    /** Return a region set to the specified rectangle
-    */
-    public Region(int left, int top, int right, int bottom) {
-        mNativeRegion = nativeConstructor();
-        nativeSetRect(mNativeRegion, left, top, right, bottom);
-    }
+	/**
+	 * Return a region set to the specified rectangle
+	 */
+	public Region(int left, int top, int right, int bottom) {
+		mNativeRegion = nativeConstructor();
+		nativeSetRect(mNativeRegion, left, top, right, bottom);
+	}
 
-    /** Set the region to the empty region
-    */
-    public void setEmpty() {
-        nativeSetRect(mNativeRegion, 0, 0, 0, 0);
-    }
+	/**
+	 * Set the region to the empty region
+	 */
+	public void setEmpty() {
+		nativeSetRect(mNativeRegion, 0, 0, 0, 0);
+	}
 
-    /** Set the region to the specified region.
-    */
-    public boolean set(Region region) {
-        return nativeSetRegion(mNativeRegion, region.mNativeRegion);
-    }
+	/**
+	 * Set the region to the specified region.
+	 */
+	public boolean set(Region region) {
+		return nativeSetRegion(mNativeRegion, region.mNativeRegion);
+	}
 
-    /** Set the region to the specified rectangle
-    */
-    public boolean set(Rect r) {
-        return nativeSetRect(mNativeRegion, r.left, r.top, r.right, r.bottom);
-    }
-    
-    /** Set the region to the specified rectangle
-    */
-    public boolean set(int left, int top, int right, int bottom) {
-        return nativeSetRect(mNativeRegion, left, top, right, bottom);
-    }
+	/**
+	 * Set the region to the specified rectangle
+	 */
+	public boolean set(Rect r) {
+		return nativeSetRect(mNativeRegion, r.left, r.top, r.right, r.bottom);
+	}
 
-    /**
-     * Set the region to the area described by the path and clip.
-     * Return true if the resulting region is non-empty. This produces a region
-     * that is identical to the pixels that would be drawn by the path
-     * (with no antialiasing).
-     */
-    public boolean setPath(Path path, Region clip) {
-        return nativeSetPath(mNativeRegion, path.ni(), clip.mNativeRegion);
-    }
+	/**
+	 * Set the region to the specified rectangle
+	 */
+	public boolean set(int left, int top, int right, int bottom) {
+		return nativeSetRect(mNativeRegion, left, top, right, bottom);
+	}
 
-    /**
-     * Return true if this region is empty
-     */
-    public native boolean isEmpty();
-    
-    /**
-     * Return true if the region contains a single rectangle
-     */
-    public native boolean isRect();
-    
-    /**
-     * Return true if the region contains more than one rectangle
-     */
-    public native boolean isComplex();
+	/**
+	 * Set the region to the area described by the path and clip. Return true if
+	 * the resulting region is non-empty. This produces a region that is
+	 * identical to the pixels that would be drawn by the path (with no
+	 * antialiasing).
+	 */
+	public boolean setPath(Path path, Region clip) {
+		return nativeSetPath(mNativeRegion, path.ni(), clip.mNativeRegion);
+	}
 
-    /**
-     * Return a new Rect set to the bounds of the region. If the region is
-     * empty, the Rect will be set to [0, 0, 0, 0]
-     */
-    public Rect getBounds() {
-        Rect r = new Rect();
-        nativeGetBounds(mNativeRegion, r);
-        return r;
-    }
-    
-    /**
-     * Set the Rect to the bounds of the region. If the region is empty, the
-     * Rect will be set to [0, 0, 0, 0]
-     */
-    public boolean getBounds(Rect r) {
-        if (r == null) {
-            throw new NullPointerException();
-        }
-        return nativeGetBounds(mNativeRegion, r);
-    }
+	/**
+	 * Return true if this region is empty
+	 */
+	public boolean isEmpty() {
+		return RegionBridge.isEmpty(mNativeRegion);
+	}
 
-    /**
-     * Return the boundary of the region as a new Path. If the region is empty,
-     * the path will also be empty.
-     */
-    public Path getBoundaryPath() {
-        Path path = new Path();
-        nativeGetBoundaryPath(mNativeRegion, path.ni());
-        return path;
-    }
+	/**
+	 * Return true if the region contains a single rectangle
+	 */
+	public boolean isRect() {
+		return RegionBridge.isRect(mNativeRegion);
+	}
 
-    /**
-     * Set the path to the boundary of the region. If the region is empty, the
-     * path will also be empty.
-     */
-    public boolean getBoundaryPath(Path path) {
-        return nativeGetBoundaryPath(mNativeRegion, path.ni());
-    }
-        
-    /**
-     * Return true if the region contains the specified point
-     */
-    public native boolean contains(int x, int y);
+	/**
+	 * Return true if the region contains more than one rectangle
+	 */
+	public boolean isComplex() {
+		return RegionBridge.isComplex(mNativeRegion);
+	}
 
-    /**
-     * Return true if the region is a single rectangle (not complex) and it
-     * contains the specified rectangle. Returning false is not a guarantee
-     * that the rectangle is not contained by this region, but return true is a
-     * guarantee that the rectangle is contained by this region.
-     */
-    public boolean quickContains(Rect r) {
-        return quickContains(r.left, r.top, r.right, r.bottom);
-    }
+	/**
+	 * Return a new Rect set to the bounds of the region. If the region is
+	 * empty, the Rect will be set to [0, 0, 0, 0]
+	 */
+	public Rect getBounds() {
+		Rect r = new Rect();
+		nativeGetBounds(mNativeRegion, r);
+		return r;
+	}
 
-    /**
-     * Return true if the region is a single rectangle (not complex) and it
-     * contains the specified rectangle. Returning false is not a guarantee
-     * that the rectangle is not contained by this region, but return true is a
-     * guarantee that the rectangle is contained by this region.
-     */
-    public native boolean quickContains(int left, int top, int right,
-                                        int bottom);
+	/**
+	 * Set the Rect to the bounds of the region. If the region is empty, the
+	 * Rect will be set to [0, 0, 0, 0]
+	 */
+	public boolean getBounds(Rect r) {
+		if (r == null) {
+			throw new NullPointerException();
+		}
+		return nativeGetBounds(mNativeRegion, r);
+	}
 
-    /**
-     * Return true if the region is empty, or if the specified rectangle does
-     * not intersect the region. Returning false is not a guarantee that they
-     * intersect, but returning true is a guarantee that they do not.
-     */
-    public boolean quickReject(Rect r) {
-        return quickReject(r.left, r.top, r.right, r.bottom);
-    }
+	/**
+	 * Return the boundary of the region as a new Path. If the region is empty,
+	 * the path will also be empty.
+	 */
+	public Path getBoundaryPath() {
+		Path path = new Path();
+		nativeGetBoundaryPath(mNativeRegion, path.ni());
+		return path;
+	}
 
-    /**
-     * Return true if the region is empty, or if the specified rectangle does
-     * not intersect the region. Returning false is not a guarantee that they
-     * intersect, but returning true is a guarantee that they do not.
-     */
-    public native boolean quickReject(int left, int top, int right, int bottom);
+	/**
+	 * Set the path to the boundary of the region. If the region is empty, the
+	 * path will also be empty.
+	 */
+	public boolean getBoundaryPath(Path path) {
+		return nativeGetBoundaryPath(mNativeRegion, path.ni());
+	}
 
-    /**
-     * Return true if the region is empty, or if the specified region does not
-     * intersect the region. Returning false is not a guarantee that they
-     * intersect, but returning true is a guarantee that they do not.
-     */
-    public native boolean quickReject(Region rgn);
+	/**
+	 * Return true if the region contains the specified point
+	 */
+	public boolean contains(int x, int y) {
+		return RegionBridge.contains(mNativeRegion, x, y);
+	}
 
-    /**
-     * Translate the region by [dx, dy]. If the region is empty, do nothing.
-     */
-    public void translate(int dx, int dy) {
-        translate(dx, dy, null);
-    }
+	/**
+	 * Return true if the region is a single rectangle (not complex) and it
+	 * contains the specified rectangle. Returning false is not a guarantee that
+	 * the rectangle is not contained by this region, but return true is a
+	 * guarantee that the rectangle is contained by this region.
+	 */
+	public boolean quickContains(Rect r) {
+		return quickContains(r.left, r.top, r.right, r.bottom);
+	}
 
-    /**
-     * Set the dst region to the result of translating this region by [dx, dy].
-     * If this region is empty, then dst will be set to empty.
-     */
-    public native void translate(int dx, int dy, Region dst);
+	/**
+	 * Return true if the region is a single rectangle (not complex) and it
+	 * contains the specified rectangle. Returning false is not a guarantee that
+	 * the rectangle is not contained by this region, but return true is a
+	 * guarantee that the rectangle is contained by this region.
+	 */
+	public boolean quickContains(int left, int top, int right, int bottom) {
+		return RegionBridge.quickContains(mNativeRegion, left, top, right,
+				bottom);
+	}
 
-    /**
-     * Scale the region by the given scale amount. This re-constructs new region by
-     * scaling the rects that this region consists of. New rectis are computed by scaling 
-     * coordinates by float, then rounded by roundf() function to integers. This may results
-     * in less internal rects if 0 < scale < 1. Zero and Negative scale result in
-     * an empty region. If this region is empty, do nothing.
-     *
-     * @hide
-     */
-    public void scale(float scale) {
-        scale(scale, null);
-    }
+	/**
+	 * Return true if the region is empty, or if the specified rectangle does
+	 * not intersect the region. Returning false is not a guarantee that they
+	 * intersect, but returning true is a guarantee that they do not.
+	 */
+	public boolean quickReject(Rect r) {
+		return quickReject(r.left, r.top, r.right, r.bottom);
+	}
 
-    /**
-     * Set the dst region to the result of scaling this region by the given scale amount.
-     * If this region is empty, then dst will be set to empty.
-     * @hide
-     */
-    public native void scale(float scale, Region dst);
+	/**
+	 * Return true if the region is empty, or if the specified rectangle does
+	 * not intersect the region. Returning false is not a guarantee that they
+	 * intersect, but returning true is a guarantee that they do not.
+	 */
+	public boolean quickReject(int left, int top, int right, int bottom) {
+		return RegionBridge
+				.quickReject(mNativeRegion, left, top, right, bottom);
+	}
 
-    public final boolean union(Rect r) {
-        return op(r, Op.UNION);
-    }
+	/**
+	 * Return true if the region is empty, or if the specified region does not
+	 * intersect the region. Returning false is not a guarantee that they
+	 * intersect, but returning true is a guarantee that they do not.
+	 */
+	public boolean quickReject(Region rgn) {
+		return RegionBridge.quickReject(rgn);
+	}
 
-    /**
-     * Perform the specified Op on this region and the specified rect. Return
-     * true if the result of the op is not empty.
-     */
-    public boolean op(Rect r, Op op) {
-        return nativeOp(mNativeRegion, r.left, r.top, r.right, r.bottom,
-                        op.nativeInt);
-    }
+	/**
+	 * Translate the region by [dx, dy]. If the region is empty, do nothing.
+	 */
+	public void translate(int dx, int dy) {
+		translate(dx, dy, null);
+	}
 
-    /**
-     * Perform the specified Op on this region and the specified rect. Return
-     * true if the result of the op is not empty.
-     */
-    public boolean op(int left, int top, int right, int bottom, Op op) {
-        return nativeOp(mNativeRegion, left, top, right, bottom,
-                        op.nativeInt);
-    }
+	/**
+	 * Set the dst region to the result of translating this region by [dx, dy].
+	 * If this region is empty, then dst will be set to empty.
+	 */
+	public void translate(int dx, int dy, Region dst) {
+		RegionBridge.translate(mNativeRegion, dx, dy, dst);
+	}
 
-    /**
-     * Perform the specified Op on this region and the specified region. Return
-     * true if the result of the op is not empty.
-     */
-    public boolean op(Region region, Op op) {
-        return op(this, region, op);
-    }
+	/**
+	 * Scale the region by the given scale amount. This re-constructs new region
+	 * by scaling the rects that this region consists of. New rectis are
+	 * computed by scaling coordinates by float, then rounded by roundf()
+	 * function to integers. This may results in less internal rects if 0 <
+	 * scale < 1. Zero and Negative scale result in an empty region. If this
+	 * region is empty, do nothing.
+	 * 
+	 * @hide
+	 */
+	public void scale(float scale) {
+		scale(scale, null);
+	}
 
-    /**
-     * Set this region to the result of performing the Op on the specified rect
-     * and region. Return true if the result is not empty.
-     */
-    public boolean op(Rect rect, Region region, Op op) {
-        return nativeOp(mNativeRegion, rect, region.mNativeRegion,
-                        op.nativeInt);
-    }
+	/**
+	 * Set the dst region to the result of scaling this region by the given
+	 * scale amount. If this region is empty, then dst will be set to empty.
+	 * 
+	 * @hide
+	 */
+	public void scale(float scale, Region dst) {
+		RegionBridge.scale(mNativeRegion, scale, dst);
+	}
 
-    /**
-     * Set this region to the result of performing the Op on the specified
-     * regions. Return true if the result is not empty.
-     */
-    public boolean op(Region region1, Region region2, Op op) {
-        return nativeOp(mNativeRegion, region1.mNativeRegion,
-                        region2.mNativeRegion, op.nativeInt);
-    }
+	public final boolean union(Rect r) {
+		return op(r, Op.UNION);
+	}
 
-    public String toString() {
-        return nativeToString(mNativeRegion);
-    }
+	/**
+	 * Perform the specified Op on this region and the specified rect. Return
+	 * true if the result of the op is not empty.
+	 */
+	public boolean op(Rect r, Op op) {
+		return nativeOp(mNativeRegion, r.left, r.top, r.right, r.bottom,
+				op.nativeInt);
+	}
 
-    //////////////////////////////////////////////////////////////////////////
-    
-    public static final Parcelable.Creator<Region> CREATOR
-        = new Parcelable.Creator<Region>() {
-            /**
-            * Rebuild a Region previously stored with writeToParcel().
-             * @param p    Parcel object to read the region from
-             * @return a new region created from the data in the parcel
-             */
-            public Region createFromParcel(Parcel p) {
-                int ni = nativeCreateFromParcel(p);
-                if (ni == 0) {
-                    throw new RuntimeException();
-                }
-                return new Region(ni);
-            }
-            public Region[] newArray(int size) {
-                return new Region[size];
-            }
-    };
-    
-    public int describeContents() {
-        return 0;
-    }
+	/**
+	 * Perform the specified Op on this region and the specified rect. Return
+	 * true if the result of the op is not empty.
+	 */
+	public boolean op(int left, int top, int right, int bottom, Op op) {
+		return nativeOp(mNativeRegion, left, top, right, bottom, op.nativeInt);
+	}
 
-    /**
-     * Write the region and its pixels to the parcel. The region can be
-     * rebuilt from the parcel by calling CREATOR.createFromParcel().
-     * @param p    Parcel object to write the region data into
-     */
-    public void writeToParcel(Parcel p, int flags) {
-        if (!nativeWriteToParcel(mNativeRegion, p)) {
-            throw new RuntimeException();
-        }
-    }
+	/**
+	 * Perform the specified Op on this region and the specified region. Return
+	 * true if the result of the op is not empty.
+	 */
+	public boolean op(Region region, Op op) {
+		return op(this, region, op);
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof Region)) {
-            return false;
-        }
-        Region peer = (Region) obj;
-        return nativeEquals(mNativeRegion, peer.mNativeRegion);
-    }
+	/**
+	 * Set this region to the result of performing the Op on the specified rect
+	 * and region. Return true if the result is not empty.
+	 */
+	public boolean op(Rect rect, Region region, Op op) {
+		return nativeOp(mNativeRegion, rect, region.mNativeRegion, op.nativeInt);
+	}
 
-    protected void finalize() throws Throwable {
-        try {
-            nativeDestructor(mNativeRegion);
-        } finally {
-            super.finalize();
-        }
-    }
-    
-    Region(int ni) {
-        if (ni == 0) {
-            throw new RuntimeException();
-        }
-        mNativeRegion = ni;
-    }
+	/**
+	 * Set this region to the result of performing the Op on the specified
+	 * regions. Return true if the result is not empty.
+	 */
+	public boolean op(Region region1, Region region2, Op op) {
+		return nativeOp(mNativeRegion, region1.mNativeRegion,
+				region2.mNativeRegion, op.nativeInt);
+	}
 
-    /* add dummy parameter so constructor can be called from jni without
-       triggering 'not cloneable' exception */
-    private Region(int ni, int dummy) {
-        this(ni);
-    }
+	public String toString() {
+		return nativeToString(mNativeRegion);
+	}
 
-    final int ni() {
-        return mNativeRegion;
-    }
+	// ////////////////////////////////////////////////////////////////////////
 
-    private static native boolean nativeEquals(int native_r1, int native_r2);
+	public static final Parcelable.Creator<Region> CREATOR = new Parcelable.Creator<Region>() {
+		/**
+		 * Rebuild a Region previously stored with writeToParcel().
+		 * 
+		 * @param p
+		 *            Parcel object to read the region from
+		 * @return a new region created from the data in the parcel
+		 */
+		public Region createFromParcel(Parcel p) {
+			int ni = nativeCreateFromParcel(p);
+			if (ni == 0) {
+				throw new RuntimeException();
+			}
+			return new Region(ni);
+		}
 
-    private static int nativeConstructor(){
-    	return ++nativeConstructor;
-    }
-    private static int nativeConstructor;
-    private static native void nativeDestructor(int native_region);
+		public Region[] newArray(int size) {
+			return new Region[size];
+		}
+	};
 
-    private static native boolean nativeSetRegion(int native_dst,
-                                                  int native_src);
-    private static native boolean nativeSetRect(int native_dst, int left,
-                                                int top, int right, int bottom);
-    private static native boolean nativeSetPath(int native_dst, int native_path,
-                                                int native_clip);
-    private static native boolean nativeGetBounds(int native_region, Rect rect);
-    private static native boolean nativeGetBoundaryPath(int native_region,
-                                                        int native_path);
+	public int describeContents() {
+		return 0;
+	}
 
-    private static native boolean nativeOp(int native_dst, int left, int top,
-                                           int right, int bottom, int op);
-    private static native boolean nativeOp(int native_dst, Rect rect,
-                                           int native_region, int op);
-    private static native boolean nativeOp(int native_dst, int native_region1,
-                                           int native_region2, int op);
+	/**
+	 * Write the region and its pixels to the parcel. The region can be rebuilt
+	 * from the parcel by calling CREATOR.createFromParcel().
+	 * 
+	 * @param p
+	 *            Parcel object to write the region data into
+	 */
+	public void writeToParcel(Parcel p, int flags) {
+		if (!nativeWriteToParcel(mNativeRegion, p)) {
+			throw new RuntimeException();
+		}
+	}
 
-    private static native int nativeCreateFromParcel(Parcel p);
-    private static native boolean nativeWriteToParcel(int native_region,
-                                                      Parcel p);
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null || !(obj instanceof Region)) {
+			return false;
+		}
+		Region peer = (Region) obj;
+		return nativeEquals(mNativeRegion, peer.mNativeRegion);
+	}
 
-    private static native String nativeToString(int native_region);
+	protected void finalize() throws Throwable {
+		try {
+			nativeDestructor(mNativeRegion);
+		} finally {
+			super.finalize();
+		}
+	}
+
+	Region(int ni) {
+		if (ni == 0) {
+			throw new RuntimeException();
+		}
+		mNativeRegion = ni;
+	}
+
+	/*
+	 * add dummy parameter so constructor can be called from jni without
+	 * triggering 'not cloneable' exception
+	 */
+	private Region(int ni, int dummy) {
+		this(ni);
+	}
+
+	final int ni() {
+		return mNativeRegion;
+	}
+
+	private static boolean nativeEquals(int native_r1, int native_r2) {
+		return RegionBridge.nativeEquals(native_r1, native_r2);
+	}
+
+	private static int nativeConstructor() {
+		return RegionBridge.nativeConstructor();
+	}
+
+	private static void nativeDestructor(int native_region) {
+		RegionBridge.nativeDestructor(native_region);
+	}
+
+	private static boolean nativeSetRegion(int native_dst, int native_src) {
+		return RegionBridge.nativeSetRegion(native_dst, native_src);
+	}
+
+	private static boolean nativeSetRect(int native_dst, int left, int top,
+			int right, int bottom) {
+		return RegionBridge.nativeSetRect(native_dst, left, top, right, bottom);
+	}
+
+	private static boolean nativeSetPath(int native_dst, int native_path,
+			int native_clip) {
+		return RegionBridge.nativeSetPath(native_dst, native_path, native_clip);
+	}
+
+	private static boolean nativeGetBounds(int native_region, Rect rect) {
+		return RegionBridge.nativeGetBounds(native_region, rect);
+	}
+
+	private static boolean nativeGetBoundaryPath(int native_region,
+			int native_path) {
+		return RegionBridge.nativeGetBoundaryPath(native_region, native_path);
+	}
+
+	private static boolean nativeOp(int native_dst, int left, int top,
+			int right, int bottom, int op) {
+		return RegionBridge.nativeOp(native_dst, left, top, right, bottom, op);
+	}
+
+	private static boolean nativeOp(int native_dst, Rect rect,
+			int native_region, int op) {
+		return RegionBridge.nativeOp(native_dst, rect, native_region, op);
+	}
+
+	private static boolean nativeOp(int native_dst, int native_region1,
+			int native_region2, int op){
+		return RegionBridge.nativeOp(native_dst, native_region1,
+				native_region2, op);
+	}
+
+	private static int nativeCreateFromParcel(Parcel p){
+		return RegionBridge.nativeCreateFromParcel(p);
+	}
+
+	private static boolean nativeWriteToParcel(int native_region,
+			Parcel p){
+		return RegionBridge.nativeWriteToParcel(native_region,p);
+	}
+
+	private static String nativeToString(int native_region){
+		return RegionBridge.nativeToString(native_region);
+	}
 }

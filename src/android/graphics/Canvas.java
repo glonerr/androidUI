@@ -16,21 +16,14 @@
 
 package android.graphics;
 
-import java.util.ArrayList;
-
-import javax.microedition.khronos.opengles.GL;
-
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.graphics.Transform;
-
 import android.text.GraphicsOperations;
 import android.text.SpannableString;
 import android.text.SpannedString;
 import android.text.TextUtils;
+
+import javax.microedition.khronos.opengles.GL;
+
+import com.lonerr.bridge.graphics.CanvasBridge;
 
 /**
  * The Canvas class holds the "draw" calls. To draw something, you need 4 basic
@@ -121,7 +114,7 @@ public class Canvas {
 	 */
 	public Canvas() {
 		// 0 means no native bitmap
-		mNativeCanvas = 1;// initRaster(0);
+		mNativeCanvas = initRaster(0);
 		mFinalizer = new CanvasFinalizer(mNativeCanvas);
 	}
 
@@ -233,7 +226,7 @@ public class Canvas {
 	 * @return true if the device that the current layer draws into is opaque
 	 */
 	public boolean isOpaque() {
-		return true;
+		return CanvasBridge.isOpaque(mNativeCanvas);
 	}
 
 	/**
@@ -241,14 +234,18 @@ public class Canvas {
 	 * 
 	 * @return the width of the current drawing layer
 	 */
-	public native int getWidth();
+	public int getWidth() {
+		return CanvasBridge.getWidth(mNativeCanvas);
+	}
 
 	/**
 	 * Returns the height of the current drawing layer
 	 * 
 	 * @return the height of the current drawing layer
 	 */
-	public native int getHeight();
+	public int getHeight() {
+		return CanvasBridge.getHeight(mNativeCanvas);
+	}
 
 	/**
 	 * <p>
@@ -340,14 +337,7 @@ public class Canvas {
 	 * @return The value to pass to restoreToCount() to balance this save()
 	 */
 	public int save() {
-		float[] fs = new float[13];
-		mMatrix.getValues(fs);
-		fs[9] = gc.getClipping().x;
-		fs[10] = gc.getClipping().y;
-		fs[11] = gc.getClipping().width;
-		fs[12] = gc.getClipping().height;
-		list.add(fs);
-		return list.size();
+		return CanvasBridge.saveAll(mNativeCanvas);
 	}
 
 	/**
@@ -362,7 +352,9 @@ public class Canvas {
 	 *            save/restore
 	 * @return The value to pass to restoreToCount() to balance this save()
 	 */
-	public native int save(int saveFlags);
+	public int save(int saveFlags) {
+		return CanvasBridge.save(mNativeCanvas, saveFlags);
+	}
 
 	/**
 	 * This behaves the same as save(), but in addition it allocates an
@@ -426,9 +418,8 @@ public class Canvas {
 	 */
 	public int saveLayerAlpha(float left, float top, float right, float bottom,
 			int alpha, int saveFlags) {
-		return 1;
-		// return native_saveLayerAlpha(mNativeCanvas, left, top, right, bottom,
-		// alpha, saveFlags);
+		return native_saveLayerAlpha(mNativeCanvas, left, top, right, bottom,
+				alpha, saveFlags);
 	}
 
 	/**
@@ -437,10 +428,7 @@ public class Canvas {
 	 * error to call restore() more times than save() was called.
 	 */
 	public void restore() {
-		float[] fs = list.remove(list.size() - 1);
-		mMatrix.setValues(fs);
-		applyMatrixToGC();
-		gc.setClipping((int) fs[9], (int) fs[10], (int) fs[11], (int) fs[12]);
+		CanvasBridge.restore(mNativeCanvas);
 	}
 
 	/**
@@ -448,7 +436,7 @@ public class Canvas {
 	 * This will equal # save() calls - # restore() calls.
 	 */
 	public int getSaveCount() {
-		return list.size();
+		return CanvasBridge.getSaveCount(mNativeCanvas);
 	}
 
 	/**
@@ -463,13 +451,7 @@ public class Canvas {
 	 *            The save level to restore to.
 	 */
 	public void restoreToCount(int saveCount) {
-		float[] fs = list.get(saveCount - 1);
-		mMatrix.setValues(fs);
-		applyMatrixToGC();
-		for (int a = list.size(); a > saveCount; a--) {
-			list.remove(a - 1);
-		}
-		gc.setClipping((int) fs[9], (int) fs[10], (int) fs[11], (int) fs[12]);
+		CanvasBridge.restoreToCount(mNativeCanvas, saveCount);
 	}
 
 	/**
@@ -481,8 +463,7 @@ public class Canvas {
 	 *            The distance to translate in Y
 	 */
 	public void translate(float dx, float dy) {
-		mMatrix.preTranslate(dx, dy);
-		applyMatrixToGC();
+		CanvasBridge.translate(mNativeCanvas, dx, dy);
 	}
 
 	/**
@@ -494,8 +475,7 @@ public class Canvas {
 	 *            The amount to scale in Y
 	 */
 	public void scale(float sx, float sy) {
-		mMatrix.preScale(sx, sy);
-		applyMatrixToGC();
+		CanvasBridge.scale(mNativeCanvas, sx, sy);
 	}
 
 	/**
@@ -511,8 +491,9 @@ public class Canvas {
 	 *            The y-coord for the pivot point (unchanged by the scale)
 	 */
 	public final void scale(float sx, float sy, float px, float py) {
-		mMatrix.preScale(sx, sy, px, py);
-		applyMatrixToGC();
+		translate(px, py);
+		scale(sx, sy);
+		translate(-px, -py);
 	}
 
 	/**
@@ -522,8 +503,7 @@ public class Canvas {
 	 *            The amount to rotate, in degrees
 	 */
 	public void rotate(float degrees) {
-		mMatrix.preRotate(degrees);
-		applyMatrixToGC();
+		CanvasBridge.rotate(mNativeCanvas, degrees);
 	}
 
 	/**
@@ -537,8 +517,9 @@ public class Canvas {
 	 *            The y-coord for the pivot point (unchanged by the rotation)
 	 */
 	public final void rotate(float degrees, float px, float py) {
-		mMatrix.preRotate(degrees, px, py);
-		applyMatrixToGC();
+		translate(px, py);
+		rotate(degrees);
+		translate(-px, -py);
 	}
 
 	/**
@@ -549,9 +530,8 @@ public class Canvas {
 	 * @param sy
 	 *            The amount to skew in Y
 	 */
-	public void skew(float sx, float sy){
-		mMatrix.preSkew(sx, sy);
-		applyMatrixToGC();
+	public void skew(float sx, float sy) {
+		CanvasBridge.skew(mNativeCanvas, sx, sy);
 	}
 
 	/**
@@ -561,9 +541,7 @@ public class Canvas {
 	 *            The matrix to preconcatenate with the current matrix
 	 */
 	public void concat(Matrix matrix) {
-		mMatrix.preConcat(matrix);
-		applyMatrixToGC();
-		// native_concat(mNativeCanvas, matrix.native_instance);
+		native_concat(mNativeCanvas, matrix.native_instance);
 	}
 
 	/**
@@ -581,14 +559,8 @@ public class Canvas {
 	 * @see #concat(Matrix)
 	 */
 	public void setMatrix(Matrix matrix) {
-		if(matrix == null){
-			mMatrix.reset();
-		}else{
-			mMatrix.set(matrix);
-		}
-		applyMatrixToGC();
-//		native_setMatrix(mNativeCanvas, matrix == null ? 0
-//				: matrix.native_instance);
+		native_setMatrix(mNativeCanvas, matrix == null ? 0
+				: matrix.native_instance);
 	}
 
 	/**
@@ -597,11 +569,7 @@ public class Canvas {
 	 */
 	@Deprecated
 	public void getMatrix(Matrix ctm) {
-		if(ctm == null){
-			ctm = new Matrix();
-		}
-		ctm.set(mMatrix);
-//		native_getCTM(mNativeCanvas, ctm.native_instance);
+		native_getCTM(mNativeCanvas, ctm.native_instance);
 	}
 
 	/**
@@ -614,17 +582,6 @@ public class Canvas {
 		// noinspection deprecation
 		getMatrix(m);
 		return m;
-	}
-
-	private void applyMatrixToGC() {
-		Transform transform = new Transform(gc.getDevice());
-		float[] values = new float[9];
-		mMatrix.getValues(values);
-		transform.setElements(values[Matrix.MSCALE_X],
-				values[Matrix.MSKEW_X], values[Matrix.MSKEW_Y],
-				values[Matrix.MSCALE_Y], values[Matrix.MTRANS_X],
-				values[Matrix.MTRANS_Y]);
-		gc.setTransform(transform);
 	}
 
 	/**
@@ -664,7 +621,9 @@ public class Canvas {
 	 *            The rectangle to intersect with the current clip.
 	 * @return true if the resulting clip is non-empty
 	 */
-	public native boolean clipRect(RectF rect);
+	public boolean clipRect(RectF rect) {
+		return CanvasBridge.clipRect(mNativeCanvas, rect);
+	}
 
 	/**
 	 * Intersect the current clip with the specified rectangle, which is
@@ -674,7 +633,9 @@ public class Canvas {
 	 *            The rectangle to intersect with the current clip.
 	 * @return true if the resulting clip is non-empty
 	 */
-	public native boolean clipRect(Rect rect);
+	public boolean clipRect(Rect rect) {
+		return CanvasBridge.clipRect(mNativeCanvas, rect);
+	}
 
 	/**
 	 * Modify the current clip with the specified rectangle, which is expressed
@@ -717,9 +678,7 @@ public class Canvas {
 	 * @return true if the resulting clip is non-empty
 	 */
 	public boolean clipRect(float left, float top, float right, float bottom) {
-		gc.setClipping((int) left, (int) top, (int) (right - left),
-				(int) (bottom - left));
-		return true;
+		return CanvasBridge.clipRect(mNativeCanvas, left, top, right, bottom);
 	}
 
 	/**
@@ -739,8 +698,7 @@ public class Canvas {
 	 * @return true if the resulting clip is non-empty
 	 */
 	public boolean clipRect(int left, int top, int right, int bottom) {
-		gc.setClipping(left, top, right - left, bottom - left);
-		return true;
+		return CanvasBridge.clipRect(mNativeCanvas, left, top, right, bottom);
 	}
 
 	/**
@@ -902,13 +860,7 @@ public class Canvas {
 	 * @return true if the current clip is non-empty.
 	 */
 	public boolean getClipBounds(Rect bounds) {
-		Rectangle rectangle = gc.getClipping();
-		bounds.left = rectangle.x;
-		bounds.right = rectangle.x + rectangle.width;
-		bounds.top = rectangle.y;
-		bounds.bottom = rectangle.y + rectangle.height;
-		return true;
-		// return native_getClipBounds(mNativeCanvas, bounds);
+		return native_getClipBounds(mNativeCanvas, bounds);
 	}
 
 	/**
@@ -934,11 +886,7 @@ public class Canvas {
 	 *            blue component (0..255) of the color to draw onto the canvas
 	 */
 	public void drawRGB(int r, int g, int b) {
-		org.eclipse.swt.graphics.Color color = gc.getBackground();
-		gc.setBackground(new Color(gc.getDevice(), new RGB(color.getRed(),
-				color.getGreen(), color.getBlue())));
-		// gc.fillRectangle(gc.getClipping());
-		// native_drawRGB(mNativeCanvas, r, g, b);
+		native_drawRGB(mNativeCanvas, r, g, b);
 	}
 
 	/**
@@ -966,11 +914,7 @@ public class Canvas {
 	 *            the color to draw onto the canvas
 	 */
 	public void drawColor(int color) {
-		Color bg = gc.getBackground();
-		gc.setBackground(new Color(gc.getDevice(), new RGB(
-				(color >> 24) & 0xff, (color >> 8) & 0xff, (color & 0xff))));
-		// gc.fillRectangle();
-		gc.setBackground(bg);
+		native_drawColor(mNativeCanvas, color);
 	}
 
 	/**
@@ -1018,8 +962,9 @@ public class Canvas {
 	 * @param paint
 	 *            The paint used to draw the points
 	 */
-	public native void drawPoints(float[] pts, int offset, int count,
-			Paint paint);
+	public void drawPoints(float[] pts, int offset, int count, Paint paint) {
+		CanvasBridge.drawPoints(mNativeCanvas, pts, offset, count, paint);
+	}
 
 	/**
 	 * Helper for drawPoints() that assumes you want to draw the entire array
@@ -1031,7 +976,9 @@ public class Canvas {
 	/**
 	 * Helper for drawPoints() for drawing a single point.
 	 */
-	public native void drawPoint(float x, float y, Paint paint);
+	public void drawPoint(float x, float y, Paint paint) {
+		CanvasBridge.drawPoint(mNativeCanvas, x, y, paint);
+	}
 
 	/**
 	 * Draw a line segment with the specified start and stop x,y coordinates,
@@ -1069,7 +1016,9 @@ public class Canvas {
 	 * @param paint
 	 *            The paint used to draw the points
 	 */
-	public native void drawLines(float[] pts, int offset, int count, Paint paint);
+	public void drawLines(float[] pts, int offset, int count, Paint paint) {
+		CanvasBridge.drawLines(mNativeCanvas, pts, offset, count, paint);
+	}
 
 	public void drawLines(float[] pts, Paint paint) {
 		drawLines(pts, 0, pts.length, paint);
@@ -1118,22 +1067,8 @@ public class Canvas {
 	 */
 	public void drawRect(float left, float top, float right, float bottom,
 			Paint paint) {
-		Color bg = gc.getBackground();
-		int alpha = gc.getAlpha();
-		if (paint != null) {
-			int color = paint.getColor();
-			if ((color >> 24) != 0) {
-				gc.setAlpha((color >> 24) & 0xff);
-			}
-			gc.setBackground(new Color(gc.getDevice(), new RGB(
-					(color >> 16) & 0xff, (color >> 8) & 0xff, (color & 0xff))));
-		}
-		gc.fillRectangle((int) left, (int) top, (int) (right - left),
-				(int) (bottom - top));
-		gc.setBackground(bg);
-		gc.setAlpha(alpha);
-		// native_drawRect(mNativeCanvas, left, top, right, bottom,
-		// paint.mNativePaint);
+		native_drawRect(mNativeCanvas, left, top, right, bottom,
+				paint.mNativePaint);
 	}
 
 	/**
@@ -1300,12 +1235,9 @@ public class Canvas {
 	 */
 	public void drawBitmap(Bitmap bitmap, float left, float top, Paint paint) {
 		throwIfRecycled(bitmap);
-		gc.drawImage(bitmap.mImage, (int) left, (int) top);
-		/*
-		 * native_drawBitmap(mNativeCanvas, bitmap.ni(), left, top, paint !=
-		 * null ? paint.mNativePaint : 0, mDensity, mScreenDensity,
-		 * bitmap.mDensity);
-		 */
+		native_drawBitmap(mNativeCanvas, bitmap.ni(), left, top,
+				paint != null ? paint.mNativePaint : 0, mDensity,
+				mScreenDensity, bitmap.mDensity);
 	}
 
 	/**
@@ -1379,18 +1311,9 @@ public class Canvas {
 			throw new NullPointerException();
 		}
 		throwIfRecycled(bitmap);
-		if (src != null) {
-			gc.drawImage(bitmap.mImage, src.left, src.top, src.width(),
-					src.height(), dst.left, dst.top, dst.width(), dst.height());
-		} else {
-			gc.drawImage(bitmap.mImage, 0, 0, bitmap.getWidth(),
-					bitmap.getHeight(), dst.left, dst.top, dst.width(),
-					dst.height());
-		}
-		/*
-		 * native_drawBitmap(mNativeCanvas, bitmap.ni(), src, dst, paint != null
-		 * ? paint.mNativePaint : 0, mScreenDensity, bitmap.mDensity);
-		 */
+		native_drawBitmap(mNativeCanvas, bitmap.ni(), src, dst,
+				paint != null ? paint.mNativePaint : 0, mScreenDensity,
+				bitmap.mDensity);
 	}
 
 	/**
@@ -1644,19 +1567,8 @@ public class Canvas {
 	 *            The paint used for the text (e.g. color, size, style)
 	 */
 	public void drawText(String text, float x, float y, Paint paint) {
-		Color color = gc.getForeground();
-		int alpha = gc.getAlpha();
-		if (paint != null && paint.getTypeface() != null) {
-			Font font = gc.getFont();
-			gc.setFont(new Font(null, paint.getTypeface().mFontData));
-			gc.setForeground(new Color(null, (paint.mColor >> 16) & 0xff,
-					(paint.mColor >> 8) & 0xff, paint.mColor & 0xff));
-			gc.drawText(text, (int) x, (int) y, true);
-			gc.setFont(font);
-			// gc.setAlpha(paint.mColor>>24);
-		}
-		gc.setAlpha(alpha);
-		gc.setForeground(color);
+		native_drawText(mNativeCanvas, text, 0, text.length(), x, y,
+				paint.mBidiFlags, paint.mNativePaint);
 	}
 
 	/**
@@ -1978,184 +1890,266 @@ public class Canvas {
 	 * 
 	 * @hide
 	 */
-	public static native void freeCaches();
+	public static void freeCaches() {
+		CanvasBridge.freeCaches();
+	}
 
 	/**
 	 * Free up text layout caches
 	 * 
 	 * @hide
 	 */
-	public static native void freeTextLayoutCaches();
-
-	private static native int initRaster(int nativeBitmapOrZero);
-
-	private static native void native_setBitmap(int nativeCanvas, int bitmap);
-
-	private static native int native_saveLayer(int nativeCanvas, RectF bounds,
-			int paint, int layerFlags);
-
-	private static native int native_saveLayer(int nativeCanvas, float l,
-			float t, float r, float b, int paint, int layerFlags);
-
-	private static native int native_saveLayerAlpha(int nativeCanvas,
-			RectF bounds, int alpha, int layerFlags);
-
-	private static native int native_saveLayerAlpha(int nativeCanvas, float l,
-			float t, float r, float b, int alpha, int layerFlags);
-
-	private static void native_concat(int nCanvas, int nMatrix) {
-
+	public static void freeTextLayoutCaches() {
+		CanvasBridge.freeTextLayoutCaches();
 	}
 
-	private static native void native_setMatrix(int nCanvas, int nMatrix);
+	private static int initRaster(int nativeBitmapOrZero) {
+		return CanvasBridge.initRaster(nativeBitmapOrZero);
+	}
 
-	private static native boolean native_clipRect(int nCanvas, float left,
-			float top, float right, float bottom, int regionOp);
+	private static void native_setBitmap(int nativeCanvas, int bitmap) {
+		CanvasBridge.native_setBitmap(nativeCanvas, bitmap);
+	}
 
-	private static native boolean native_clipPath(int nativeCanvas,
-			int nativePath, int regionOp);
+	private static int native_saveLayer(int nativeCanvas, RectF bounds,
+			int paint, int layerFlags) {
+		return CanvasBridge.native_saveLayer(nativeCanvas, bounds, paint,
+				layerFlags);
+	}
 
-	private static native boolean native_clipRegion(int nativeCanvas,
-			int nativeRegion, int regionOp);
+	private static int native_saveLayer(int nativeCanvas, float l, float t,
+			float r, float b, int paint, int layerFlags) {
+		return CanvasBridge.native_saveLayer(nativeCanvas, l, t, r, b, paint,
+				layerFlags);
+	}
 
-	private static native void nativeSetDrawFilter(int nativeCanvas,
-			int nativeFilter);
+	private static int native_saveLayerAlpha(int nativeCanvas, RectF bounds,
+			int alpha, int layerFlags) {
+		return CanvasBridge.native_saveLayerAlpha(nativeCanvas, bounds, alpha,
+				layerFlags);
+	}
 
-	private static native boolean native_getClipBounds(int nativeCanvas,
-			Rect bounds);
+	private static int native_saveLayerAlpha(int nativeCanvas, float l,
+			float t, float r, float b, int alpha, int layerFlags) {
+		return CanvasBridge.native_saveLayerAlpha(nativeCanvas, l, t, r, b,
+				alpha, layerFlags);
+	}
 
-	private static native void native_getCTM(int canvas, int matrix);
+	private static void native_concat(int nCanvas, int nMatrix) {
+		CanvasBridge.native_concat(nCanvas, nMatrix);
+	}
 
-	private static native boolean native_quickReject(int nativeCanvas,
-			RectF rect, int native_edgeType);
+	private static void native_setMatrix(int nCanvas, int nMatrix) {
+		CanvasBridge.native_setMatrix(nCanvas, nMatrix);
+	}
 
-	private static native boolean native_quickReject(int nativeCanvas,
-			int path, int native_edgeType);
+	private static boolean native_clipRect(int nCanvas, float left, float top,
+			float right, float bottom, int regionOp) {
+		return CanvasBridge.native_clipRect(nCanvas, left, top, right, bottom,
+				regionOp);
+	}
+
+	private static boolean native_clipPath(int nativeCanvas, int nativePath,
+			int regionOp) {
+		return CanvasBridge.native_clipPath(nativeCanvas, nativePath, regionOp);
+	}
+
+	private static boolean native_clipRegion(int nativeCanvas,
+			int nativeRegion, int regionOp) {
+		return CanvasBridge.native_clipRegion(nativeCanvas, nativeRegion,
+				regionOp);
+	}
+
+	private static void nativeSetDrawFilter(int nativeCanvas, int nativeFilter) {
+		CanvasBridge.nativeSetDrawFilter(nativeCanvas, nativeFilter);
+	}
+
+	private static boolean native_getClipBounds(int nativeCanvas, Rect bounds) {
+		return CanvasBridge.native_getClipBounds(nativeCanvas, bounds);
+	}
+
+	private static void native_getCTM(int canvas, int matrix) {
+		CanvasBridge.native_getCTM(canvas, matrix);
+	}
+
+	private static boolean native_quickReject(int nativeCanvas, RectF rect,
+			int native_edgeType) {
+		return CanvasBridge.native_quickReject(nativeCanvas, rect,
+				native_edgeType);
+	}
+
+	private static boolean native_quickReject(int nativeCanvas, int path,
+			int native_edgeType) {
+		return CanvasBridge.native_quickReject(nativeCanvas, path,
+				native_edgeType);
+	}
 
 	private static boolean native_quickReject(int nativeCanvas, float left,
 			float top, float right, float bottom, int native_edgeType) {
-		return false;
+		return CanvasBridge.native_quickReject(nativeCanvas, left, top, right,
+				bottom, native_edgeType);
 	}
 
-	private static native void native_drawRGB(int nativeCanvas, int r, int g,
-			int b);
+	private static void native_drawRGB(int nativeCanvas, int r, int g, int b) {
+		CanvasBridge.native_drawRGB(nativeCanvas, r, g, b);
+	}
 
-	private static native void native_drawARGB(int nativeCanvas, int a, int r,
-			int g, int b);
+	private static void native_drawARGB(int nativeCanvas, int a, int r, int g,
+			int b) {
+		CanvasBridge.native_drawARGB(nativeCanvas, a, r, g, b);
+	}
 
-	private static native void native_drawColor(int nativeCanvas, int color);
+	private static void native_drawColor(int nativeCanvas, int color) {
+		CanvasBridge.native_drawColor(nativeCanvas, color);
+	}
 
-	private static native void native_drawColor(int nativeCanvas, int color,
-			int mode);
+	private static void native_drawColor(int nativeCanvas, int color, int mode) {
+		CanvasBridge.native_drawColor(nativeCanvas, color, mode);
+	}
 
-	private static native void native_drawPaint(int nativeCanvas, int paint);
+	private static void native_drawPaint(int nativeCanvas, int paint) {
+		CanvasBridge.native_drawPaint(nativeCanvas, paint);
+	}
 
-	private static native void native_drawLine(int nativeCanvas, float startX,
-			float startY, float stopX, float stopY, int paint);
+	private static void native_drawLine(int nativeCanvas, float startX,
+			float startY, float stopX, float stopY, int paint) {
+		CanvasBridge.native_drawLine(nativeCanvas, startX, startY, stopX,
+				stopY, paint);
+	}
 
-	private static native void native_drawRect(int nativeCanvas, RectF rect,
-			int paint);
+	private static void native_drawRect(int nativeCanvas, RectF rect, int paint) {
+		CanvasBridge.native_drawRect(nativeCanvas, rect, paint);
+	}
 
-	private static native void native_drawRect(int nativeCanvas, float left,
-			float top, float right, float bottom, int paint);
+	private static void native_drawRect(int nativeCanvas, float left,
+			float top, float right, float bottom, int paint) {
+		CanvasBridge.native_drawRect(nativeCanvas, left, top, right, bottom,
+				paint);
+	}
 
-	private static native void native_drawOval(int nativeCanvas, RectF oval,
-			int paint);
+	private static void native_drawOval(int nativeCanvas, RectF oval, int paint) {
+		CanvasBridge.native_drawOval(nativeCanvas, oval, paint);
+	}
 
-	private static native void native_drawCircle(int nativeCanvas, float cx,
-			float cy, float radius, int paint);
+	private static void native_drawCircle(int nativeCanvas, float cx, float cy,
+			float radius, int paint) {
+		CanvasBridge.native_drawCircle(nativeCanvas, cx, cy, radius, paint);
+	}
 
-	private static native void native_drawArc(int nativeCanvas, RectF oval,
-			float startAngle, float sweep, boolean useCenter, int paint);
+	private static void native_drawArc(int nativeCanvas, RectF oval,
+			float startAngle, float sweep, boolean useCenter, int paint) {
+		CanvasBridge.native_drawArc(nativeCanvas, oval, startAngle, sweep,
+				useCenter, paint);
+	}
 
-	private static native void native_drawRoundRect(int nativeCanvas,
-			RectF rect, float rx, float ry, int paint);
+	private static void native_drawRoundRect(int nativeCanvas, RectF rect,
+			float rx, float ry, int paint) {
+		CanvasBridge.native_drawRoundRect(nativeCanvas, rect, rx, ry, paint);
+	}
 
-	private static native void native_drawPath(int nativeCanvas, int path,
-			int paint);
+	private static void native_drawPath(int nativeCanvas, int path, int paint) {
+		CanvasBridge.native_drawPath(nativeCanvas, path, paint);
+	}
 
-	private native void native_drawBitmap(int nativeCanvas, int bitmap,
-			float left, float top, int nativePaintOrZero, int canvasDensity,
-			int screenDensity, int bitmapDensity);
+	private void native_drawBitmap(int nativeCanvas, int bitmap, float left,
+			float top, int nativePaintOrZero, int canvasDensity,
+			int screenDensity, int bitmapDensity) {
+		CanvasBridge.native_drawBitmap(nativeCanvas, bitmap, left, top,
+				nativePaintOrZero, canvasDensity, screenDensity, bitmapDensity);
+	}
 
-	private native void native_drawBitmap(int nativeCanvas, int bitmap,
-			Rect src, RectF dst, int nativePaintOrZero, int screenDensity,
-			int bitmapDensity);
+	private void native_drawBitmap(int nativeCanvas, int bitmap, Rect src,
+			RectF dst, int nativePaintOrZero, int screenDensity,
+			int bitmapDensity) {
+		CanvasBridge.native_drawBitmap(nativeCanvas, bitmap, src, dst,
+				nativePaintOrZero, screenDensity, bitmapDensity);
+	}
 
-	private static native void native_drawBitmap(int nativeCanvas, int bitmap,
-			Rect src, Rect dst, int nativePaintOrZero, int screenDensity,
-			int bitmapDensity);
+	private void native_drawBitmap(int nativeCanvas, int bitmap, Rect src,
+			Rect dst, int nativePaintOrZero, int screenDensity,
+			int bitmapDensity) {
+		CanvasBridge.native_drawBitmap(nativeCanvas, bitmap, src, dst,
+				nativePaintOrZero, screenDensity, bitmapDensity);
+	}
 
-	private static native void native_drawBitmap(int nativeCanvas,
-			int[] colors, int offset, int stride, float x, float y, int width,
-			int height, boolean hasAlpha, int nativePaintOrZero);
+	private static void native_drawBitmap(int nativeCanvas, int[] colors,
+			int offset, int stride, float x, float y, int width, int height,
+			boolean hasAlpha, int nativePaintOrZero) {
+		CanvasBridge.native_drawBitmap(nativeCanvas, colors, offset, stride, x,
+				y, width, height, hasAlpha, nativePaintOrZero);
+	}
 
-	private static native void nativeDrawBitmapMatrix(int nCanvas, int nBitmap,
-			int nMatrix, int nPaint);
+	private static void nativeDrawBitmapMatrix(int nCanvas, int nBitmap,
+			int nMatrix, int nPaint) {
+		CanvasBridge.nativeDrawBitmapMatrix(nCanvas, nBitmap, nMatrix, nPaint);
+	}
 
-	private static native void nativeDrawBitmapMesh(int nCanvas, int nBitmap,
+	private static void nativeDrawBitmapMesh(int nCanvas, int nBitmap,
 			int meshWidth, int meshHeight, float[] verts, int vertOffset,
-			int[] colors, int colorOffset, int nPaint);
+			int[] colors, int colorOffset, int nPaint) {
+		CanvasBridge.nativeDrawBitmapMesh(nCanvas, nBitmap, meshWidth,
+				meshHeight, verts, vertOffset, colors, colorOffset, nPaint);
+	}
 
-	private static native void nativeDrawVertices(int nCanvas, int mode, int n,
+	private static void nativeDrawVertices(int nCanvas, int mode, int n,
 			float[] verts, int vertOffset, float[] texs, int texOffset,
 			int[] colors, int colorOffset, short[] indices, int indexOffset,
-			int indexCount, int nPaint);
+			int indexCount, int nPaint) {
+		CanvasBridge.nativeDrawVertices(nCanvas, mode, n, verts, vertOffset,
+				texs, texOffset, colors, colorOffset, indices, indexOffset,
+				indexCount, nPaint);
+	}
 
-	private static native void native_drawText(int nativeCanvas, char[] text,
-			int index, int count, float x, float y, int flags, int paint);
+	private static void native_drawText(int nativeCanvas, char[] text,
+			int index, int count, float x, float y, int flags, int paint){
+		CanvasBridge.native_drawText(nativeCanvas, text, index, count, x, y, flags, paint);
+	}
 
-	private static native void native_drawText(int nativeCanvas, String text,
-			int start, int end, float x, float y, int flags, int paint);
+	private static void native_drawText(int nativeCanvas, String text,
+			int start, int end, float x, float y, int flags, int paint){
+		CanvasBridge.native_drawText(nativeCanvas, text, start, end, x, y, flags, paint);
+	}
 
-	private static native void native_drawTextRun(int nativeCanvas,
+	private static void native_drawTextRun(int nativeCanvas,
 			String text, int start, int end, int contextStart, int contextEnd,
-			float x, float y, int flags, int paint);
+			float x, float y, int flags, int paint){
+		CanvasBridge.native_drawTextRun(nativeCanvas, text, start, end, contextStart, contextEnd, x, y, flags, paint);
+	}
 
-	private static native void native_drawTextRun(int nativeCanvas,
+	private static void native_drawTextRun(int nativeCanvas,
 			char[] text, int start, int count, int contextStart,
-			int contextCount, float x, float y, int flags, int paint);
+			int contextCount, float x, float y, int flags, int paint){
+		CanvasBridge.native_drawTextRun(nativeCanvas, text, start, count, contextStart, contextCount, x, y, flags, paint);
+	}
 
-	private static native void native_drawPosText(int nativeCanvas,
-			char[] text, int index, int count, float[] pos, int paint);
+	private static void native_drawPosText(int nativeCanvas,
+			char[] text, int index, int count, float[] pos, int paint){
+		CanvasBridge.native_drawPosText(nativeCanvas, text, index, count, pos, paint);
+	}
 
-	private static native void native_drawPosText(int nativeCanvas,
-			String text, float[] pos, int paint);
+	private static void native_drawPosText(int nativeCanvas,
+			String text, float[] pos, int paint){
+		CanvasBridge.native_drawPosText(nativeCanvas, text, pos, paint);
+	}
 
-	private static native void native_drawTextOnPath(int nativeCanvas,
+	private static void native_drawTextOnPath(int nativeCanvas,
 			char[] text, int index, int count, int path, float hOffset,
-			float vOffset, int bidiFlags, int paint);
+			float vOffset, int bidiFlags, int paint){
+		CanvasBridge.native_drawTextOnPath(nativeCanvas, text, index, count, path, hOffset, vOffset, bidiFlags, paint);
+	}
 
-	private static native void native_drawTextOnPath(int nativeCanvas,
+	private static void native_drawTextOnPath(int nativeCanvas,
 			String text, int path, float hOffset, float vOffset, int flags,
-			int paint);
-
-	private static native void native_drawPicture(int nativeCanvas,
-			int nativePicture);
-
-	private static native void finalizer(int nativeCanvas);
-
-	private GC gc;
-	private ArrayList<float[]> list = new ArrayList<float[]>();
-	private float[] elements = new float[6];
-	private Matrix mMatrix = new Matrix();
-
-	public void setGC(GC gc) {
-		if (this.gc != gc) {
-			this.gc = gc;
-			Transform transform = new Transform(gc.getDevice());
-			float[] values = new float[9];
-			mMatrix.getValues(values);
-			transform.setElements(values[Matrix.MSCALE_X],
-					values[Matrix.MSKEW_X], values[Matrix.MSKEW_Y],
-					values[Matrix.MSCALE_Y], values[Matrix.MTRANS_X],
-					values[Matrix.MTRANS_Y]);
-			gc.setTransform(transform);
-		}
+			int paint){
+		CanvasBridge.native_drawTextOnPath(nativeCanvas, text, path, hOffset, vOffset, flags, paint);
 	}
 
-	public GC getGC() {
-		return gc;
+	private static void native_drawPicture(int nativeCanvas,
+			int nativePicture){
+		CanvasBridge.native_drawPicture(nativeCanvas, nativePicture);
 	}
 
+	private static void finalizer(int nativeCanvas){
+		CanvasBridge.finalizer(nativeCanvas);
+	}
 }

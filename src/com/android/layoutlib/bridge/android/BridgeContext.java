@@ -16,20 +16,17 @@
 
 package com.android.layoutlib.bridge.android;
 
-import com.android.ide.common.rendering.api.ILayoutPullParser;
-import com.android.ide.common.rendering.api.IProjectCallback;
-import com.android.ide.common.rendering.api.LayoutLog;
-import com.android.ide.common.rendering.api.RenderResources;
-import com.android.ide.common.rendering.api.ResourceReference;
-import com.android.ide.common.rendering.api.ResourceValue;
-import com.android.ide.common.rendering.api.StyleResourceValue;
-import com.android.layoutlib.bridge.Bridge;
-import com.android.layoutlib.bridge.BridgeConstants;
-import com.android.layoutlib.bridge.android.view.WindowManagerImpl;
-import com.android.layoutlib.bridge.impl.ParserFactory;
-import com.android.layoutlib.bridge.impl.Stack;
-import com.android.resources.ResourceType;
-import com.android.util.Pair;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -38,7 +35,6 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.ContextImpl;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentSender;
@@ -75,17 +71,20 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.textservice.TextServicesManager;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
+import com.android.ide.common.rendering.api.ILayoutPullParser;
+import com.android.ide.common.rendering.api.IProjectCallback;
+import com.android.ide.common.rendering.api.LayoutLog;
+import com.android.ide.common.rendering.api.RenderResources;
+import com.android.ide.common.rendering.api.ResourceReference;
+import com.android.ide.common.rendering.api.ResourceValue;
+import com.android.ide.common.rendering.api.StyleResourceValue;
+import com.android.layoutlib.bridge.Bridge;
+import com.android.layoutlib.bridge.BridgeConstants;
+import com.android.layoutlib.bridge.android.view.WindowManagerImpl;
+import com.android.layoutlib.bridge.impl.ParserFactory;
+import com.android.layoutlib.bridge.impl.Stack;
+import com.android.resources.ResourceType;
+import com.android.util.Pair;
 
 /**
  * Custom implementation of Context/Activity to handle non compiled resources.

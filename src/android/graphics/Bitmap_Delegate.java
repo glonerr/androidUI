@@ -36,6 +36,8 @@ import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
+import org.eclipse.swt.graphics.Image;
+
 /**
  * Delegate implementing the native methods of android.graphics.Bitmap
  *
@@ -559,5 +561,10 @@ public final class Bitmap_Delegate {
 
         return result;
     }
+
+	public static Bitmap createBitmap(Image image, boolean isMutable, Density density) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

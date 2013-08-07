@@ -16,15 +16,6 @@
 
 package android.graphics;
 
-import com.android.ide.common.rendering.api.LayoutLog;
-import com.android.layoutlib.bridge.Bridge;
-import com.android.layoutlib.bridge.impl.DelegateManager;
-import com.android.tools.layoutlib.annotations.LayoutlibDelegate;
-
-import android.graphics.Paint.FontMetrics;
-import android.graphics.Paint.FontMetricsInt;
-import android.text.TextUtils;
-
 import java.awt.BasicStroke;
 import java.awt.Font;
 import java.awt.Shape;
@@ -37,6 +28,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+
+import android.graphics.Paint.FontMetrics;
+import android.graphics.Paint.FontMetricsInt;
+import android.text.TextUtils;
+
+import com.android.ide.common.rendering.api.LayoutLog;
+import com.android.layoutlib.bridge.Bridge;
+import com.android.layoutlib.bridge.impl.DelegateManager;
+import com.android.tools.layoutlib.annotations.LayoutlibDelegate;
 
 /**
  * Delegate implementing the native methods of android.graphics.Paint

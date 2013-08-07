@@ -16,23 +16,17 @@
 
 package android.graphics;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
-import org.eclipse.swt.graphics.Image;
+import com.lonerr.bridge.graphics.BitmapBridge;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.DisplayMetrics;
-
-import com.android.resources.Density;
 
 public final class Bitmap implements Parcelable {
 	/**
@@ -1015,14 +1009,12 @@ public final class Bitmap implements Parcelable {
 
 	/** Returns the bitmap's width */
 	public final int getWidth() {
-		return mWidth == -1 ? mWidth = /* nativeWidth(mNativeBitmap) */mImage
-				.getBounds().width : mWidth;
+		return mWidth == -1 ? mWidth = nativeWidth(mNativeBitmap) : mWidth;
 	}
 
 	/** Returns the bitmap's height */
 	public final int getHeight() {
-		return mHeight == -1 ? mHeight = /* nativeHeight(mNativeBitmap) */mImage
-				.getBounds().height : mHeight;
+		return mHeight == -1 ? mHeight = nativeHeight(mNativeBitmap) : mHeight;
 	}
 
 	/**
@@ -1134,7 +1126,7 @@ public final class Bitmap implements Parcelable {
 	 * true by default.
 	 */
 	public final boolean hasAlpha() {
-		return true;
+		return nativeHasAlpha(mNativeBitmap);
 	}
 
 	/**
@@ -1545,99 +1537,125 @@ public final class Bitmap implements Parcelable {
 
 	// ////////// native methods
 
-	private static native Bitmap nativeCreate(int[] colors, int offset,
-			int stride, int width, int height, int nativeConfig, boolean mutable);
+	private static Bitmap nativeCreate(int[] colors, int offset, int stride,
+			int width, int height, int nativeConfig, boolean mutable) {
+		return BitmapBridge.nativeCreate(colors, offset, stride, width, height,
+				nativeConfig, mutable);
+	}
 
-	private static native Bitmap nativeCopy(int srcBitmap, int nativeConfig,
-			boolean isMutable);
+	private static Bitmap nativeCopy(int srcBitmap, int nativeConfig,
+			boolean isMutable) {
+		return BitmapBridge.nativeCopy(srcBitmap, nativeConfig, isMutable);
+	}
 
-	private static native void nativeDestructor(int nativeBitmap);
+	private static void nativeDestructor(int nativeBitmap) {
+		BitmapBridge.nativeDestructor(nativeBitmap);
+	}
 
-	private static native boolean nativeRecycle(int nativeBitmap);
+	private static boolean nativeRecycle(int nativeBitmap) {
+		return BitmapBridge.nativeRecycle(nativeBitmap);
+	}
 
-	private static native boolean nativeCompress(int nativeBitmap, int format,
-			int quality, OutputStream stream, byte[] tempStorage);
+	private static boolean nativeCompress(int nativeBitmap, int format,
+			int quality, OutputStream stream, byte[] tempStorage) {
+		return BitmapBridge.nativeCompress(nativeBitmap, format, quality,
+				stream, tempStorage);
+	}
 
-	private static native void nativeErase(int nativeBitmap, int color);
+	private static void nativeErase(int nativeBitmap, int color) {
+		BitmapBridge.nativeErase(nativeBitmap, color);
+	}
 
-	private static native int nativeWidth(int nativeBitmap);
+	private static int nativeWidth(int nativeBitmap) {
+		return BitmapBridge.nativeWidth(nativeBitmap);
+	}
 
-	private static native int nativeHeight(int nativeBitmap);
+	private static int nativeHeight(int nativeBitmap) {
+		return BitmapBridge.nativeHeight(nativeBitmap);
+	}
 
-	private static native int nativeRowBytes(int nativeBitmap);
+	private static int nativeRowBytes(int nativeBitmap) {
+		return BitmapBridge.nativeRowBytes(nativeBitmap);
+	}
 
-	private static native int nativeConfig(int nativeBitmap);
+	private static int nativeConfig(int nativeBitmap) {
+		return BitmapBridge.nativeConfig(nativeBitmap);
+	}
 
-	private static native int nativeGetPixel(int nativeBitmap, int x, int y);
+	private static int nativeGetPixel(int nativeBitmap, int x, int y) {
+		return BitmapBridge.nativeGetPixel(nativeBitmap, x, y);
+	}
 
-	private static native void nativeGetPixels(int nativeBitmap, int[] pixels,
-			int offset, int stride, int x, int y, int width, int height);
+	private static void nativeGetPixels(int nativeBitmap, int[] pixels,
+			int offset, int stride, int x, int y, int width, int height) {
+		BitmapBridge.nativeGetPixels(nativeBitmap, pixels, offset, stride, x,
+				y, width, height);
+	}
 
-	private static native void nativeSetPixel(int nativeBitmap, int x, int y,
-			int color);
+	private static void nativeSetPixel(int nativeBitmap, int x, int y, int color) {
+		BitmapBridge.nativeSetPixel(nativeBitmap, x, y, color);
+	}
 
-	private static native void nativeSetPixels(int nativeBitmap, int[] colors,
-			int offset, int stride, int x, int y, int width, int height);
+	private static void nativeSetPixels(int nativeBitmap, int[] colors,
+			int offset, int stride, int x, int y, int width, int height){
+		BitmapBridge.nativeSetPixels(nativeBitmap, colors, offset, stride, x,
+				y, width, height);
+	}
 
-	private static native void nativeCopyPixelsToBuffer(int nativeBitmap,
-			Buffer dst);
+	private static void nativeCopyPixelsToBuffer(int nativeBitmap,
+			Buffer dst){
+		BitmapBridge.nativeCopyPixelsToBuffer(nativeBitmap,dst);
+	}
 
-	private static native void nativeCopyPixelsFromBuffer(int nb, Buffer src);
+	private static void nativeCopyPixelsFromBuffer(int nb, Buffer src){
+		BitmapBridge.nativeCopyPixelsFromBuffer(nb,src);
+	}
 
-	private static native int nativeGenerationId(int nativeBitmap);
+	private static int nativeGenerationId(int nativeBitmap){
+		return BitmapBridge.nativeGenerationId(nativeBitmap);
+	}
 
-	private static native Bitmap nativeCreateFromParcel(Parcel p);
+	private static Bitmap nativeCreateFromParcel(Parcel p){
+		return BitmapBridge.nativeCreateFromParcel(p);
+	}
 
 	// returns true on success
-	private static native boolean nativeWriteToParcel(int nativeBitmap,
-			boolean isMutable, int density, Parcel p);
+	private static boolean nativeWriteToParcel(int nativeBitmap,
+			boolean isMutable, int density, Parcel p){
+		return BitmapBridge.nativeWriteToParcel(nativeBitmap,isMutable,density,p);
+	}
 
 	// returns a new bitmap built from the native bitmap's alpha, and the paint
-	private static native Bitmap nativeExtractAlpha(int nativeBitmap,
-			int nativePaint, int[] offsetXY);
+	private static Bitmap nativeExtractAlpha(int nativeBitmap,
+			int nativePaint, int[] offsetXY){
+		return BitmapBridge.nativeExtractAlpha(nativeBitmap,nativePaint,offsetXY);
+	}
 
-	private static native void nativePrepareToDraw(int nativeBitmap);
+	private static void nativePrepareToDraw(int nativeBitmap){
+		BitmapBridge.nativePrepareToDraw(nativeBitmap);
+	}
 
-	private static native boolean nativeHasAlpha(int nativeBitmap);
+	private static boolean nativeHasAlpha(int nativeBitmap){
+		return BitmapBridge.nativeHasAlpha(nativeBitmap);
+	}
 
-	private static native void nativeSetHasAlpha(int nBitmap, boolean hasAlpha);
+	private static void nativeSetHasAlpha(int nBitmap, boolean hasAlpha){
+		BitmapBridge.nativeSetHasAlpha(nBitmap,hasAlpha);
+	}
 
-	private static native boolean nativeHasMipMap(int nativeBitmap);
+	private static boolean nativeHasMipMap(int nativeBitmap){
+		return BitmapBridge.nativeHasMipMap(nativeBitmap);
+	}
 
-	private static native void nativeSetHasMipMap(int nBitmap, boolean hasMipMap);
+	private static void nativeSetHasMipMap(int nBitmap, boolean hasMipMap){
+		BitmapBridge.nativeSetHasMipMap(nBitmap,hasMipMap);
+	}
 
-	private static native boolean nativeSameAs(int nb0, int nb1);
+	private static boolean nativeSameAs(int nb0, int nb1){
+		return BitmapBridge.nativeSameAs(nb0,nb1);
+	}
 
 	/* package */final int ni() {
 		return mNativeBitmap;
-	}
-
-	Image mImage;
-
-	public static Bitmap createBitmap(File input, boolean isMutable,
-			Density density) throws IOException {
-		Bitmap bitmap = new Bitmap(isMutable);
-		bitmap.mDensity = density.getDpiValue();
-		try {
-			bitmap.mImage = new Image(null, new FileInputStream(input));
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return bitmap;
-	}
-
-	Bitmap(boolean mutable) {
-		mNativeBitmap = -1;
-		mFinalizer = null;
-		mIsMutable = mutable;
-	}
-
-	public static Bitmap createBitmap(Image image, boolean isMutable,
-			Density density) {
-		Bitmap bitmap = new Bitmap(isMutable);
-		bitmap.mDensity = density.getDpiValue();
-		bitmap.mImage = image;
-		return bitmap;
 	}
 }

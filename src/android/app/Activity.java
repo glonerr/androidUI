@@ -3301,7 +3301,7 @@ public class Activity extends ContextThemeWrapper
     }
 
     @Override
-	protected void onApplyThemeResource(Resources.Theme theme, int resid,
+    protected void onApplyThemeResource(Resources.Theme theme, int resid,
             boolean first) {
         if (mParent == null) {
             super.onApplyThemeResource(theme, resid, first);

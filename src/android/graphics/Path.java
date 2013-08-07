@@ -18,6 +18,8 @@ package android.graphics;
 
 import android.view.HardwareRenderer;
 
+import com.lonerr.bridge.graphics.PathBridge;
+
 /**
  * The Path class encapsulates compound (multiple contour) geometric paths
  * consisting of straight line segments, quadratic curves, and cubic curves.
@@ -606,57 +608,163 @@ public class Path {
         return mNativePath;
     }
 
-    private static  int init1(){
-    	return nativePath++;
+    private static int init1(){
+    	return PathBridge.init1();
     }
-    private static native int init2(int nPath);
-    private static native void native_reset(int nPath);
-    private static native void native_rewind(int nPath);
-    private static native void native_set(int native_dst, int native_src);
-    private static native int native_getFillType(int nPath);
-    private static native void native_setFillType(int nPath, int ft);
-    private static native boolean native_isEmpty(int nPath);
-    private static native boolean native_isRect(int nPath, RectF rect);
-    private static native void native_computeBounds(int nPath, RectF bounds);
-    private static native void native_incReserve(int nPath, int extraPtCount);
-    private static native void native_moveTo(int nPath, float x, float y);
-    private static native void native_rMoveTo(int nPath, float dx, float dy);
-    private static native void native_lineTo(int nPath, float x, float y);
-    private static native void native_rLineTo(int nPath, float dx, float dy);
-    private static native void native_quadTo(int nPath, float x1, float y1,
-                                             float x2, float y2);
-    private static native void native_rQuadTo(int nPath, float dx1, float dy1,
-                                              float dx2, float dy2);
-    private static native void native_cubicTo(int nPath, float x1, float y1,
-                                        float x2, float y2, float x3, float y3);
-    private static native void native_rCubicTo(int nPath, float x1, float y1,
-                                        float x2, float y2, float x3, float y3);
-    private static native void native_arcTo(int nPath, RectF oval,
-                    float startAngle, float sweepAngle, boolean forceMoveTo);
-    private static native void native_close(int nPath);
-    private static native void native_addRect(int nPath, RectF rect, int dir);
-    private static native void native_addRect(int nPath, float left, float top,
-                                            float right, float bottom, int dir);
-    private static native void native_addOval(int nPath, RectF oval, int dir);
-    private static native void native_addCircle(int nPath, float x, float y,
-                                                float radius, int dir);
-    private static native void native_addArc(int nPath, RectF oval,
-                                            float startAngle, float sweepAngle);
-    private static native void native_addRoundRect(int nPath, RectF rect,
-                                                   float rx, float ry, int dir);
-    private static native void native_addRoundRect(int nPath, RectF r,
-                                                   float[] radii, int dir);
-    private static native void native_addPath(int nPath, int src, float dx,
-                                              float dy);
-    private static native void native_addPath(int nPath, int src);
-    private static native void native_addPath(int nPath, int src, int matrix);
-    private static native void native_offset(int nPath, float dx, float dy,
-                                             int dst_path);
-    private static native void native_offset(int nPath, float dx, float dy);
-    private static native void native_setLastPoint(int nPath, float dx, float dy);
-    private static native void native_transform(int nPath, int matrix,
-                                                int dst_path);
-    private static native void native_transform(int nPath, int matrix);
-    private static native void finalizer(int nPath);
-    private static int nativePath;
+
+	private static int init2(int nPath) {
+		return PathBridge.init2(nPath);
+	}
+
+	private static void native_reset(int nPath) {
+		PathBridge.native_reset(nPath);
+	}
+
+	private static void native_rewind(int nPath) {
+		PathBridge.native_rewind(nPath);
+	}
+
+	private static void native_set(int native_dst, int native_src) {
+		PathBridge.native_set(native_dst, native_src);
+	}
+
+	private static int native_getFillType(int nPath) {
+		return PathBridge.native_getFillType(nPath);
+	}
+
+	private static void native_setFillType(int nPath, int ft) {
+		PathBridge.native_setFillType(nPath, ft);
+	}
+
+	private static boolean native_isEmpty(int nPath) {
+		return PathBridge.native_isEmpty(nPath);
+	}
+
+	private static boolean native_isRect(int nPath, RectF rect) {
+		return PathBridge.native_isRect(nPath, rect);
+	}
+
+	private static void native_computeBounds(int nPath, RectF bounds) {
+		PathBridge.native_computeBounds(nPath, bounds);
+	}
+
+	private static void native_incReserve(int nPath, int extraPtCount) {
+		PathBridge.native_incReserve(nPath, extraPtCount);
+	}
+
+	private static void native_moveTo(int nPath, float x, float y) {
+		PathBridge.native_moveTo(nPath, x, y);
+	}
+
+	private static void native_rMoveTo(int nPath, float dx, float dy) {
+		PathBridge.native_rMoveTo(nPath, dx, dy);
+	}
+
+	private static void native_lineTo(int nPath, float x, float y) {
+		PathBridge.native_lineTo(nPath, x, y);
+	}
+
+	private static void native_rLineTo(int nPath, float dx, float dy) {
+		PathBridge.native_rLineTo(nPath, dx, dy);
+	}
+
+	private static void native_quadTo(int nPath, float x1, float y1, float x2,
+			float y2) {
+		PathBridge.native_quadTo(nPath, x1, y1, x2, y2);
+	}
+
+	private static void native_rQuadTo(int nPath, float dx1, float dy1,
+			float dx2, float dy2) {
+		PathBridge.native_rQuadTo(nPath, dx1, dy1, dx2, dy2);
+	}
+
+	private static void native_cubicTo(int nPath, float x1, float y1, float x2,
+			float y2, float x3, float y3) {
+		PathBridge.native_cubicTo(nPath, x1, y1, x2, y2, x3, y3);
+	}
+
+	private static void native_rCubicTo(int nPath, float x1, float y1,
+			float x2, float y2, float x3, float y3) {
+		PathBridge.native_rCubicTo(nPath, x1, y1, x2, y2, x3, y3);
+	}
+
+	private static void native_arcTo(int nPath, RectF oval, float startAngle,
+			float sweepAngle, boolean forceMoveTo) {
+		PathBridge.native_arcTo(nPath, oval, startAngle, sweepAngle, forceMoveTo);
+	}
+
+	private static void native_close(int nPath) {
+		PathBridge.native_close(nPath);
+	}
+
+	private static void native_addRect(int nPath, RectF rect, int dir) {
+		PathBridge.native_addRect(nPath, rect, dir);
+	}
+
+	private static void native_addRect(int nPath, float left, float top,
+			float right, float bottom, int dir) {
+		PathBridge.native_addRect(nPath, left, top, right, bottom, dir);
+	}
+
+	private static void native_addOval(int nPath, RectF oval, int dir) {
+		PathBridge.native_addOval(nPath, oval, dir);
+	}
+
+	private static void native_addCircle(int nPath, float x, float y,
+			float radius, int dir) {
+		PathBridge.native_addCircle(nPath, x, y, radius, dir);
+	}
+
+	private static void native_addArc(int nPath, RectF oval, float startAngle,
+			float sweepAngle) {
+		PathBridge.native_addArc(nPath, oval, startAngle, sweepAngle);
+	}
+
+	private static void native_addRoundRect(int nPath, RectF rect, float rx,
+			float ry, int dir) {
+		PathBridge.native_addRoundRect(nPath, rect, rx, ry, dir);
+	}
+
+	private static void native_addRoundRect(int nPath, RectF r, float[] radii,
+			int dir) {
+		PathBridge.native_addRoundRect(nPath, r, radii, dir);
+	}
+
+	private static void native_addPath(int nPath, int src, float dx, float dy) {
+		PathBridge.native_addPath(nPath, src, dx, dy);
+	}
+
+	private static void native_addPath(int nPath, int src) {
+		PathBridge.native_addPath(nPath, src);
+	}
+
+	private static void native_addPath(int nPath, int src, int matrix) {
+		PathBridge.native_addPath(nPath, src, matrix);
+	}
+
+	private static void native_offset(int nPath, float dx, float dy,
+			int dst_path) {
+		PathBridge.native_offset(nPath, dx, dy, dst_path);
+	}
+
+	private static void native_offset(int nPath, float dx, float dy) {
+		PathBridge.native_offset(nPath, dx, dy);
+	}
+
+	private static void native_setLastPoint(int nPath, float dx, float dy) {
+		PathBridge.native_setLastPoint(nPath, dx, dy);
+	}
+
+	private static void native_transform(int nPath, int matrix, int dst_path) {
+		PathBridge.native_transform(nPath, matrix, dst_path);
+	}
+
+	private static void native_transform(int nPath, int matrix) {
+		PathBridge.native_transform(nPath, matrix);
+	}
+
+	private static void finalizer(int nPath) {
+		PathBridge.finalizer(nPath);
+	}
+
 }

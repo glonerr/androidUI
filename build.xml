@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="androidUI" default="help">
-	<property name="nativeclass" value="android.content.res.AssetManager" />
+	<property name="nativeclass" value="android.graphics.Canvas" />
 	<property name="nativesrc" value="nativesrc" />
-	<property name="androidlib" value="/home/lonerr/Tools/worktools/android-sdk-linux/platforms/android-17/android.jar"/>
-
+	<property name="androidlib" value="/home/lonerr/Tools/worktools/android-sdk-linux/platforms/android-17/android.jar" />
+	<property name="skia_include_images" value="/home/lonerr/Tools/worktools/android/system/external/skia/include/images" />
+	<property name="skia_include_core" value="/home/lonerr/Tools/worktools/android/system/external/skia/include/core" />
+	<property name="skia_include_config" value="/home/lonerr/Tools/worktools/android/system/external/skia/include/config" />
+	<property name="skia_include_lazy" value="/home/lonerr/Tools/worktools/android/system/external/skia/include/lazy" />
+	<property name="skia_include_effect" value="/home/lonerr/Tools/worktools/android/system/external/skia/include/effects" />
+	<property name="skia_src_images" value="/home/lonerr/Tools/worktools/android/system/external/skia/src/images" />
+	<property name="skia_src_core" value="/home/lonerr/Tools/worktools/android/system/external/skia/src/core" />
+	<property name="skia_src_config" value="/home/lonerr/Tools/worktools/android/system/external/skia/src/config" />
+	<property name="skia_src_lazy" value="/home/lonerr/Tools/worktools/android/system/external/skia/src/lazy" />
+	<property name="skia_src_effect" value="/home/lonerr/Tools/worktools/android/system/external/skia/src/effects" />
 	<!-- - - - - - - - - - - - - - - - - - 
           target: help                      
          - - - - - - - - - - - - - - - - - -->
@@ -14,9 +23,9 @@
 	<!-- ================================= 
           target: build native libs              
          ================================= -->
-	<target name="build native libs" depends="create header" description="description">
+	<target name="build native libs" description="description">
 		<exec executable="g++">
-			<arg line="-I /usr/lib/jvm/java-6-openjdk-amd64/include ${nativesrc}/android_content_res_AssetManager.cpp ${nativesrc}/android_os_SystemProperties.cpp -shared -o libs/libsystem.so" />
+			<arg line="-fpermissive -fPIC -I /usr/lib/jvm/java-6-openjdk-amd64/include -I ${skia_include_core} -I ${skia_include_effect} -I ${skia_include_images} -shared -Wall -o libs/libskia.so ${nativesrc}/android_graphics_Canvas.cpp ./libskia.a" />
 		</exec>
 	</target>
 

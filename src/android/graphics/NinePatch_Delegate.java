@@ -16,17 +16,6 @@
 
 package android.graphics;
 
-import com.android.ide.common.rendering.api.LayoutLog;
-import com.android.layoutlib.bridge.Bridge;
-import com.android.layoutlib.bridge.impl.DelegateManager;
-import com.android.layoutlib.bridge.impl.GcSnapshot;
-import com.android.ninepatch.NinePatchChunk;
-import com.android.tools.layoutlib.annotations.LayoutlibDelegate;
-
-import android.graphics.drawable.NinePatchDrawable;
-
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -35,6 +24,14 @@ import java.io.ObjectOutputStream;
 import java.lang.ref.SoftReference;
 import java.util.HashMap;
 import java.util.Map;
+
+import android.graphics.drawable.NinePatchDrawable;
+
+import com.android.ide.common.rendering.api.LayoutLog;
+import com.android.layoutlib.bridge.Bridge;
+import com.android.layoutlib.bridge.impl.DelegateManager;
+import com.android.ninepatch.NinePatchChunk;
+import com.android.tools.layoutlib.annotations.LayoutlibDelegate;
 
 /**
  * Delegate implementing the native methods of android.graphics.NinePatch

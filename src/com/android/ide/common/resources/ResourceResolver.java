@@ -426,6 +426,9 @@ public class ResourceResolver extends RenderResources {
         if (isProjectTheme) {
             theme = projectStyleMap.get(themeName);
         } else {
+        	for(String name:frameworkStyleMap.keySet()){
+        		System.out.println(name);
+        	}
             theme = frameworkStyleMap.get(themeName);
         }
         if (theme instanceof StyleResourceValue) {

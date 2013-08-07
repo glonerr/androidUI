@@ -155,7 +155,7 @@ public final class BridgeResources extends Resources {
     @Override
     public Drawable getDrawable(int id) throws NotFoundException {
         Pair<String, ResourceValue> value = getResourceValue(id, mPlatformResourceFlag);
-
+        System.out.println(value);
         if (value != null) {
             return ResourceHelper.getDrawable(value.getSecond(), mContext);
         }

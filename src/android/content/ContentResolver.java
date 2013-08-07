@@ -1223,7 +1223,7 @@ public abstract class ContentResolver {
     }
 
     /** @hide - designated user version */
-    public void registerContentObserver(Uri uri, boolean notifyForDescendents,
+    public final void registerContentObserver(Uri uri, boolean notifyForDescendents,
             ContentObserver observer, int userHandle)
     {
         try {

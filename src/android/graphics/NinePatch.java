@@ -16,6 +16,8 @@
 
 package android.graphics;
 
+import com.lonerr.bridge.graphics.NinePatchBridge;
+
 /**
  * The NinePatch class permits drawing a bitmap in nine sections. The four
  * corners are unscaled; the four edges are scaled in one axis, and the middle
@@ -54,7 +56,7 @@ public class NinePatch {
 		mBitmap = bitmap;
 		mChunk = chunk;
 		mSrcName = srcName;
-		// validateNinePatchChunk(mBitmap.ni(), chunk);
+		validateNinePatchChunk(mBitmap.ni(), chunk);
 	}
 
 	/**
@@ -126,10 +128,9 @@ public class NinePatch {
 	 */
 	public void draw(Canvas canvas, Rect location, Paint paint) {
 		if (!canvas.isHardwareAccelerated()) {
-//			canvas.dr
-//			nativeDraw(canvas.mNativeCanvas, location, mBitmap.ni(), mChunk,
-//					paint != null ? paint.mNativePaint : 0, canvas.mDensity,
-//					mBitmap.mDensity);
+			nativeDraw(canvas.mNativeCanvas, location, mBitmap.ni(), mChunk,
+					paint != null ? paint.mNativePaint : 0, canvas.mDensity,
+					mBitmap.mDensity);
 		} else {
 			mRect.set(location);
 			canvas.drawPatch(mBitmap, mChunk, mRect, paint);
@@ -161,63 +162,30 @@ public class NinePatch {
 		return r != 0 ? new Region(r) : null;
 	}
 
-	public native static boolean isNinePatchChunk(byte[] chunk);
-
-	private static void validateNinePatchChunk(int bitmap, byte[] chunk){
-		
+	public static boolean isNinePatchChunk(byte[] chunk) {
+		return NinePatchBridge.isNinePatchChunk(chunk);
 	}
 
-	private static native void nativeDraw(int canvas_instance, RectF loc,
+	private static void validateNinePatchChunk(int bitmap, byte[] chunk) {
+		NinePatchBridge.validateNinePatchChunk(bitmap, chunk);
+	}
+
+	private static void nativeDraw(int canvas_instance, RectF loc,
 			int bitmap_instance, byte[] c, int paint_instance_or_null,
-			int destDensity, int srcDensity);
+			int destDensity, int srcDensity) {
+		NinePatchBridge.nativeDraw(canvas_instance, loc, bitmap_instance, c,
+				paint_instance_or_null, destDensity, srcDensity);
+	}
 
-	private static native void nativeDraw(int canvas_instance, Rect loc,
+	private static void nativeDraw(int canvas_instance, Rect loc,
 			int bitmap_instance, byte[] c, int paint_instance_or_null,
-			int destDensity, int srcDensity);
+			int destDensity, int srcDensity) {
+		NinePatchBridge.nativeDraw(canvas_instance, loc, bitmap_instance, c,
+				paint_instance_or_null, destDensity, srcDensity);
+	}
 
-	public static native int nativeGetTransparentRegion(int bitmap,
-			byte[] chunk, Rect location);
-
-	public static void printHex(byte[] bs, int start, int count) {
-		int startline = start >> 4;
-		int endline = startline + (count >> 4);
-		for (int line = startline; line < endline; line++) {
-			int startIndex = line<<4;
-			System.out.printf("%07x:", line);
-				
-			System.out.printf(" %02x", bs[startIndex + 0]);
-			System.out.printf("%02x", bs[startIndex + 1]);
-
-			System.out.printf(" %02x", bs[startIndex + 2]);
-			System.out.printf("%02x", bs[startIndex + 3]);
-
-			System.out.printf(" %02x", bs[startIndex + 4]);
-			System.out.printf("%02x", bs[startIndex + 5]);
-
-			System.out.printf(" %02x", bs[startIndex + 6]);
-			System.out.printf("%02x", bs[startIndex + 7]);
-
-			System.out.printf("-%02x", bs[startIndex + 8]);
-			System.out.printf("%02x", bs[startIndex + 9]);
-
-			System.out.printf(" %02x", bs[startIndex + 10]);
-			System.out.printf("%02x", bs[startIndex + 11]);
-
-			System.out.printf(" %02x", bs[startIndex + 12]);
-			System.out.printf("%02x", bs[startIndex + 13]);
-
-			System.out.printf(" %02x", bs[startIndex + 14]);
-			System.out.printf("%02x ", bs[startIndex + 15]);
-			
-			for(int a=0;a<16;a++){
-				if(bs[startIndex+a]>=32&&bs[startIndex+a]<=126){
-					System.out.printf("%c",(char)bs[startIndex+a]);
-				}else{
-					System.out.print(".");
-				}
-			}
-
-			System.out.println();
-		}
+	private static int nativeGetTransparentRegion(int bitmap, byte[] chunk,
+			Rect location) {
+		return NinePatchBridge.nativeGetTransparentRegion(bitmap, chunk, location);
 	}
 }

@@ -230,7 +230,7 @@ public final class ResourceHelper {
                             value.isFramework() ? null : context.getProjectKey());
 
                     if (bitmap == null) {
-                        bitmap = Bitmap.createBitmap(bmpFile, false /*isMutable*/,
+                        bitmap = Bitmap_Delegate.createBitmap(bmpFile, false /*isMutable*/,
                                 density);
                         Bridge.setCachedBitmap(stringValue, bitmap,
                                 value.isFramework() ? null : context.getProjectKey());
@@ -281,7 +281,7 @@ public final class ResourceHelper {
                     }
 
                     if (bitmap == null) {
-                        bitmap = Bitmap.createBitmap(ninePatch.getImage(),
+                        bitmap = Bitmap_Delegate.createBitmap(ninePatch.getImage(),
                                 false /*isMutable*/,
                                 density);
 

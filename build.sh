@@ -1,0 +1,1 @@
+g++ -fpermissive -fPIC -I /usr/lib/jvm/java-6-openjdk-amd64/include -I /home/lonerr/Tools/worktools/android/system/external/skia/include/images -I /home/lonerr/Tools/worktools/android/system/external/skia/include/core -I /home/lonerr/Tools/worktools/android/system/external/skia/include/effects -shared -Wall -o libs/libskia.so nativesrc/android_graphics_Canvas.cpp ./libskia.a

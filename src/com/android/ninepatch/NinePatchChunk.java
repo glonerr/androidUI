@@ -17,7 +17,7 @@
 package com.android.ninepatch;
 
 import java.awt.Rectangle;
-import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,6 @@ import java.util.List;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.Transform;
 
 /**
  * The chunk information for a nine patch.
